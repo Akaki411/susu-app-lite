@@ -97,7 +97,9 @@ export default () => {
 
     return (
         <div className="screen">
-            <PageHeader title={t('feed.title')} subtitle={t('feed.subtitle')}/>
+            <div className="screen__header">
+                <PageHeader title={t('feed.title')} subtitle={t('feed.subtitle')}/>
+            </div>
             <div className="feed__body" ref={bodyRef}>
                 {items.length === 0 && offline ? (
                     <div className="empty-state">{t('feed.emptyOffline')}</div>

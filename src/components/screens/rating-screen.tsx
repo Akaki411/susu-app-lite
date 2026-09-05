@@ -49,11 +49,13 @@ export default () => {
 
     return (
         <div className="screen" {...handlers}>
-            <PageHeader
-                title={t('rating.title')}
-                subtitle={`${t('rating.term', {n: activeTerm})}`}
-                actions={[{icon: 'settings', label: t('rating.selectTerm'), onClick: () => setTermOpen(true)}]}
-            />
+            <div className="screen__header">
+                <PageHeader
+                    title={t('rating.title')}
+                    subtitle={`${t('rating.term', {n: activeTerm})}`}
+                    actions={[{icon: 'settings', label: t('rating.selectTerm'), onClick: () => setTermOpen(true)}]}
+                />
+            </div>
 
             {(pullDistance > 0 || refreshing) && (
                 <div className="pull-refresh" style={{height: Math.max(pullDistance, refreshing ? 28 : 0)}}>

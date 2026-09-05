@@ -25,6 +25,7 @@ import {
     fmtShort,
     groupByDate,
     mondayOf,
+    parseKey,
     sameDay,
     toKey,
     weekParity,
@@ -78,9 +79,38 @@ export default () => {
         setSource(s)
     };
 
+    const daysBetween = (a: Date, b: Date): number =>
+        Math.round((parseKey(toKey(b)).getTime() - parseKey(toKey(a)).getTime()) / 86400000);
+
+    const findNextDateWithPairs = (from: Date): Date | null => {
+        const fromKey = toKey(from)
+        let best: string | null = null
+        for (const k of byDate.keys()) {
+            if (k > fromKey && (best === null || k < best)) best = k
+        }
+        return best ? parseKey(best) : null
+    };
+
+    const findPrevDateWithPairs = (from: Date): Date | null => {
+        const fromKey = toKey(from)
+        let best: string | null = null
+        for (const k of byDate.keys()) {
+            if (k < fromKey && (best === null || k > best)) best = k
+        }
+        return best ? parseKey(best) : null
+    };
+
     const {handlers, pullDistance} = useSwipe({
-        onSwipeLeft: () => (mode === 'dates' ? setSlide((s) => s ?? {dir: 'left', step: 1}) : shiftWeek(1)),
-        onSwipeRight: () => (mode === 'dates' ? setSlide((s) => s ?? {dir: 'right', step: 1}) : shiftWeek(-1)),
+        onSwipeLeft: () => {
+            if (mode !== 'dates') return shiftWeek(1)
+            const next = findNextDateWithPairs(pivot)
+            if (next) setSlide((s) => s ?? {dir: 'left', step: daysBetween(pivot, next)})
+        },
+        onSwipeRight: () => {
+            if (mode !== 'dates') return shiftWeek(-1)
+            const prev = findPrevDateWithPairs(pivot)
+            if (prev) setSlide((s) => s ?? {dir: 'right', step: daysBetween(prev, pivot)})
+        },
         onPullRefresh: () => void refresh(true),
     })
 
@@ -182,7 +212,7 @@ export default () => {
 
     return (
         <div className="screen">
-            <div className="schedule__header">
+            <div className="screen__header">
                 <PageHeader
                     title={t('schedule.title')}
                     subtitle={subtitle}

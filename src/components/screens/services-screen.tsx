@@ -75,11 +75,13 @@ export default () => {
 
     return (
         <div className="screen">
-            <PageHeader
-                title={t('services.title')}
-                subtitle={t('services.subtitle')}
-                actions={[{icon: 'settings', label: t('settings.title'), onClick: () => setSheet('settings')}]}
-            />
+            <div className="screen__header">
+                <PageHeader
+                    title={t('services.title')}
+                    subtitle={t('services.subtitle')}
+                    actions={[{icon: 'settings', label: t('settings.title'), onClick: () => setSheet('settings')}]}
+                />
+            </div>
 
             <div className="services__body">
                 {profile && (

@@ -1,3 +1,10 @@
 .screen {
   min-height: 100vh;
+
+  &__header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--c-bg);
+  }
 }

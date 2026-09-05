@@ -98,6 +98,37 @@ const patchReactVirtualFlushSync = () => {
     console.warn(`[patch] @tanstack/react-virtual: flushSync → безопасный namespace-импорт (${file})`)
 };
 
+const patchGetClientComponentPathGuard = () => {
+    let rariDist
+    try {
+        rariDist = join(require.resolve('rari/package.json'), '..', 'dist')
+    } catch {
+        return
+    }
+    const OLD = 'find(t=>t.path!==``&&u(t.path,e))'
+    const NEW = 'find(t=>t.path!=null&&t.path!==``&&u(t.path,e))'
+    const patched = []
+    const walk = (dir) => {
+        for (const entry of readdirSync(dir)) {
+            const full = join(dir, entry)
+            if (statSync(full).isDirectory()) {
+                walk(full)
+                continue
+            }
+            if (!full.endsWith('.mjs')) continue
+            const src = readFileSync(full, 'utf-8')
+            if (!src.includes(OLD)) continue
+            writeFileSync(full, src.replace(OLD, NEW), 'utf-8')
+            patched.push(full)
+        }
+    }
+    walk(rariDist)
+    if (patched.length) {
+        for (const f of patched) console.warn(`[patch] rari: guard undefined path in get-client-component → ${f}`)
+    }
+};
+
 restoreReactCompilerRuntime()
 patchRariFiles()
 patchReactVirtualFlushSync()
+patchGetClientComponentPathGuard()

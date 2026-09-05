@@ -8,18 +8,20 @@ import {isSusuLink} from '@/backend/security'
 
 const ARTICLE_TTL = 3600
 
-export const GET = async (request: Request): Promise<Response> => withApi(request, async () => {
-    if (!getBearer(request)) return error('Требуется авторизация', 401)
+export async function GET(request: Request): Promise<Response> {
+    return withApi(request, async () => {
+        if (!getBearer(request)) return error('Требуется авторизация', 401)
 
-    const link = new URL(request.url).searchParams.get('link')
-    if (!isSusuLink(link)) return error('Некорректная ссылка на статью', 400)
+        const link = new URL(request.url).searchParams.get('link')
+        if (!isSusuLink(link)) return error('Некорректная ссылка на статью', 400)
 
-    const cacheKey = `news:article:${link}`
-    const cached = await cache.getJson(cacheKey)
-    if (cached) return json(cached, 200)
+        const cacheKey = `news:article:${link}`
+        const cached = await cache.getJson(cacheKey)
+        if (cached) return json(cached, 200)
 
-    const article = await fetchArticleBody(link)
-    if (!article) return error('Не удалось получить статью', 502)
-    await cache.setJson(cacheKey, article, ARTICLE_TTL)
-    return json(article, 200)
-});
+        const article = await fetchArticleBody(link)
+        if (!article) return error('Не удалось получить статью', 502)
+        await cache.setJson(cacheKey, article, ARTICLE_TTL)
+        return json(article, 200)
+    })
+}
