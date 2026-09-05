@@ -1,0 +1,16 @@
+.section-title {
+  margin-bottom: 0.625rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--c-text-2);
+
+  &--tight {
+    margin-bottom: 0.375rem;
+  }
+
+  &--spaced {
+    margin-top: 1.25rem;
+  }
+}

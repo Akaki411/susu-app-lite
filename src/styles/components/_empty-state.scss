@@ -1,0 +1,10 @@
+.empty-state {
+  padding: 2.5rem 0;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--c-text-3);
+
+  &--compact {
+    padding: 1.5rem 0;
+  }
+}

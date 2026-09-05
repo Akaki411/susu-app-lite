@@ -1,0 +1,63 @@
+@use '../abstracts/mixins' as *;
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 2.5rem 1.25rem 0.625rem;
+
+  @include md {
+    padding-top: 1.5rem;
+  }
+
+  &__info {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  &__title,
+  &__subtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.375rem;
+    font-weight: 700;
+
+    @include md {
+      font-size: 1.625rem;
+    }
+  }
+
+  &__subtitle {
+    margin: 0.125rem 0 0;
+    font-size: 0.78125rem;
+    color: var(--c-text-3);
+  }
+
+  &__actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.25rem;
+    width: 2.25rem;
+    border-radius: 0.75rem;
+    color: var(--c-text-2);
+  }
+
+  &__action-icon {
+    height: 1.125rem;
+    width: 1.125rem;
+  }
+}

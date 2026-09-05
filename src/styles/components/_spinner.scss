@@ -1,0 +1,9 @@
+.spinner {
+  display: inline-block;
+  height: 1.125rem;
+  width: 1.125rem;
+  border: 0.125rem solid var(--c-divider);
+  border-top-color: var(--c-accent);
+  border-radius: 62.4375rem;
+  animation: susu-spin 0.7s linear infinite;
+}

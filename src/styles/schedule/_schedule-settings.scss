@@ -1,0 +1,44 @@
+.schedule-settings {
+  &__search {
+    width: 100%;
+    border: none;
+    border-radius: 0.75rem;
+    background: var(--c-surface-2);
+    padding: 0.75rem 0.875rem;
+    font-size: 0.84375rem;
+    color: var(--c-text);
+    outline: none;
+
+    &:focus {
+      outline: 0.125rem solid var(--c-accent);
+    }
+  }
+
+  &__results {
+    margin-top: 0.625rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__result {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 0.0625rem solid var(--c-divider);
+    padding: 0.625rem 0;
+    text-align: left;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__result-title {
+    font-size: 0.84375rem;
+    font-weight: 600;
+  }
+
+  &__result-subtitle {
+    font-size: 0.71875rem;
+    color: var(--c-text-3);
+  }
+}

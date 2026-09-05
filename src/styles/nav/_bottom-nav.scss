@@ -1,0 +1,52 @@
+@use '../abstracts/mixins' as *;
+
+.bottom-nav {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  border-top: 0.0625rem solid var(--c-divider);
+  padding: 0.75rem 1rem 1.25rem;
+  background: var(--nav-glass);
+  -webkit-backdrop-filter: blur(0.625rem);
+  backdrop-filter: blur(0.625rem);
+
+
+  @include md {
+    display: none;
+  }
+
+  &__item {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  &__icon {
+    height: 1.5rem;
+    width: 1.5rem;
+    stroke-width: 1.2;
+    stroke: var(--c-text-3);
+
+    &--active {
+      stroke: var(--c-accent);
+      stroke-width: 2;
+    }
+  }
+
+  &__label {
+    font-size: 0.65625rem;
+    font-weight: 500;
+    color: var(--c-text-3);
+
+    &--active {
+      color: var(--c-accent);
+      font-weight: 600;
+    }
+  }
+}

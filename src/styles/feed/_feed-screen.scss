@@ -1,0 +1,20 @@
+.feed {
+  &__body {
+    padding: 0 1.25rem;
+  }
+
+  &__row {
+    display: flex;
+    align-items: stretch;
+    padding-bottom: 0.75rem;
+
+    > * {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+  }
+
+  &__sentinel {
+    height: 0.25rem;
+  }
+}

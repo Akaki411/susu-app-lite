@@ -1,0 +1,103 @@
+:root {
+  --c-bg: #e7e8ec;
+  --c-surface: #ffffff;
+  --c-surface-2: #f0f0f5;
+  --c-surface-3: #e5e6ec;
+  --c-text: #1c1c1e;
+  --c-text-2: #6b6b74;
+  --c-text-3: #8e8e93;
+  --c-divider: #e1e2e8;
+  --c-accent: #364890;
+  --c-accent-2: #3f70e3;
+  --c-accent-soft: #e9edf8;
+  --c-on-accent: #ffffff;
+  --c-ring-track: #e1e2e8;
+  --c-rate-low: #d6433d;
+  --c-rate-satisfactory: #b8860f;
+  --c-rate-mid: #2a63d9;
+  --c-rate-high: #2f9e58;
+  --live-glow: rgba(63, 112, 227, 0.5);
+  --nav-glass: rgba(240, 240, 245, 0.9);
+  --accent-glass: rgba(38, 71, 149, 0.8);
+  --c-rail-bg: rgba(38, 71, 149, 0.93);
+  --c-rail-fg: rgba(255, 255, 255, 0.68);
+  --c-rail-fg-active: #ffffff;
+  --c-rail-active-bg: rgba(255, 255, 255, 0.16);
+  --shadow-1: 0 0.0625rem 0.125rem rgba(20, 22, 30, 0.05);
+  --shadow-2: 0 0.75rem 1.75rem rgba(20, 22, 30, 0.1);
+  --shadow-3: 0 1.25rem 3rem rgba(20, 22, 30, 0.22);
+
+  // Только системные шрифты устройства (без веб-загрузки): SF Pro (iOS/macOS), Segoe UI (Windows),
+  // Roboto (Android) — все с полной поддержкой кириллицы. Рендерится мгновенно, работает офлайн.
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --radius-sm: 0.75rem;
+  --radius-md: 1.125rem;
+  --radius-lg: 1.75rem;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --c-bg: #131318;
+    --c-surface: #1e1e26;
+    --c-surface-2: #26262f;
+    --c-surface-3: #2e2e38;
+    --c-text: #f3f3f6;
+    --c-text-2: #a6a6b0;
+    --c-text-3: #86868f;
+    --c-divider: rgba(255, 255, 255, 0.09);
+    --c-accent: #3f70e3;
+    --c-accent-2: #7aa0f0;
+    --c-accent-soft: rgba(63, 112, 227, 0.16);
+    --c-on-accent: #ffffff;
+    --c-ring-track: rgba(255, 255, 255, 0.12);
+    --c-rate-low: #ff6b67;
+    --c-rate-satisfactory: #e0b74a;
+    --c-rate-mid: #6e9bf2;
+    --c-rate-high: #4cc98a;
+    --live-glow: rgba(122, 160, 240, 0.5);
+    --nav-glass: rgba(30, 30, 38, 0.9);
+    --accent-glass: rgba(63, 112, 227, 0.72);
+    --c-rail-bg: rgba(30, 50, 102, 0.94);
+    --c-rail-fg: rgba(255, 255, 255, 0.62);
+    --c-rail-fg-active: #ffffff;
+    --c-rail-active-bg: rgba(255, 255, 255, 0.15);
+    --shadow-1: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.3);
+    --shadow-2: 0 1rem 2rem rgba(0, 0, 0, 0.45);
+    --shadow-3: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --c-bg: #131318;
+  --c-surface: #1e1e26;
+  --c-surface-2: #26262f;
+  --c-surface-3: #2e2e38;
+  --c-text: #f3f3f6;
+  --c-text-2: #a6a6b0;
+  --c-text-3: #9D9DA8;
+  --c-divider: rgba(255, 255, 255, 0.09);
+  --c-accent: #3f70e3;
+  --c-accent-2: #7aa0f0;
+  --c-accent-soft: rgba(63, 112, 227, 0.16);
+  --c-on-accent: #ffffff;
+  --c-ring-track: rgba(255, 255, 255, 0.12);
+  --c-rate-low: #ff6b67;
+  --c-rate-satisfactory: #e0b74a;
+  --c-rate-mid: #6e9bf2;
+  --c-rate-high: #4cc98a;
+  --live-glow: rgba(122, 160, 240, 0.9);
+  --nav-glass: rgba(30, 30, 38, 0.9);
+  --accent-glass: rgba(63, 112, 227, 0.8);
+  --c-rail-bg: rgba(30, 50, 102, 0.94);
+  --c-rail-fg: rgba(255, 255, 255, 0.62);
+  --c-rail-fg-active: #ffffff;
+  --c-rail-active-bg: rgba(255, 255, 255, 0.15);
+  --shadow-1: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 1rem 2rem rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}

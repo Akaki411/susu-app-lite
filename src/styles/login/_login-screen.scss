@@ -1,0 +1,154 @@
+@use '../abstracts/mixins' as *;
+
+.login {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background: var(--c-surface);
+
+  @include md {
+    align-items: center;
+    justify-content: center;
+    background: var(--c-bg);
+    padding: 1.5rem;
+  }
+
+  &__panel {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+
+    @include md {
+      flex: none;
+      width: 100%;
+      max-width: 26.25rem;
+      overflow: hidden;
+      border-radius: 1.75rem;
+      background: var(--c-surface);
+      box-shadow: var(--shadow-3);
+    }
+  }
+
+  &__hero {
+    display: flex;
+    height: 16rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, var(--c-accent-2), var(--c-accent));
+  }
+
+  &__logo {
+    width: 11rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0.5rem 1.125rem rgba(0, 0, 0, 0.28));
+  }
+
+  &__form {
+    position: relative;
+    z-index: 10;
+    margin-top: -1.5rem;
+    flex: 1 1 auto;
+    border-radius: 1.75rem 1.75rem 0 0;
+    background: var(--c-surface);
+    padding: 2rem 1.5rem 1.5rem;
+  }
+
+  &__title {
+    margin: 0 0 1.5rem;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  &__field {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  &__field-label {
+    display: block;
+    margin-bottom: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--c-text-3);
+  }
+
+  &__input {
+    width: 100%;
+    border: none;
+    border-radius: 0.75rem;
+    background: var(--c-surface-2);
+    padding: 0.75rem 0.875rem;
+    font-size: 0.875rem;
+    color: var(--c-text);
+    outline: none;
+
+    &:focus {
+      outline: 0.125rem solid var(--c-accent);
+    }
+  }
+
+  &__error {
+    margin: 0 0 0.75rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--c-rate-low);
+  }
+
+  &__submit {
+    margin-top: 0.5rem;
+    display: block;
+    width: 100%;
+    border-radius: 0.75rem;
+    background: var(--c-accent);
+    padding: 0.75rem 0;
+    text-align: center;
+    font-size: 0.90625rem;
+    font-weight: 700;
+    color: var(--c-on-accent);
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+
+  &__copyright {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.65625rem;
+    color: var(--c-text-3);
+  }
+}
+
+.install-pwa {
+  margin-top: 0.75rem;
+
+  &__button {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    background: var(--c-surface-2);
+    padding: 0.6875rem 0;
+    text-align: center;
+    font-size: 0.84375rem;
+    font-weight: 600;
+    color: var(--c-text-2);
+  }
+
+  &__icon {
+    height: 1rem;
+    width: 1rem;
+  }
+
+  &__hint {
+    margin: 0.5rem 0.25rem 0;
+    text-align: center;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--c-text-3);
+  }
+}

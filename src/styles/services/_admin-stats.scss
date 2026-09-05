@@ -1,0 +1,78 @@
+.admin-stats {
+  margin-top: 1.5rem;
+  border: 0.0625rem solid var(--c-divider);
+  border-radius: 1rem;
+  background: var(--c-surface-2);
+  padding: 0.875rem;
+
+  &__head {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__icon {
+    height: 1rem;
+    width: 1rem;
+    color: var(--c-text-3);
+  }
+
+  &__kpis {
+    display: flex;
+    gap: 0.625rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__kpi {
+    flex: 1 1 0%;
+    min-width: 0;
+    border-radius: 0.75rem;
+    background: var(--c-surface);
+    padding: 0.625rem 0.75rem;
+  }
+
+  &__kpi-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__kpi-label {
+    margin-top: 0.125rem;
+    font-size: 0.6875rem;
+    color: var(--c-text-3);
+  }
+
+  &__days {
+    display: flex;
+    flex-direction: column;
+    max-height: 11.25rem;
+    overflow-y: auto;
+  }
+
+  &__day {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-top: 0.0625rem solid var(--c-divider);
+    padding: 0.4375rem 0;
+
+    &:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+  }
+
+  &__day-date {
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--c-text-2);
+  }
+
+  &__day-nums {
+    font-size: 0.71875rem;
+    color: var(--c-text-3);
+  }
+}

@@ -1,0 +1,29 @@
+@use '../abstracts/mixins' as *;
+
+.pass-fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 6.625rem;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3.625rem;
+  width: 3.625rem;
+  border-radius: 30%;
+  color: var(--c-on-accent);
+  background: var(--accent-glass);
+  -webkit-backdrop-filter: blur(0.625rem);
+  backdrop-filter: blur(0.625rem);
+  border: none;
+  box-shadow: var(--shadow-3);
+
+  @include md {
+    bottom: 2.25rem;
+  }
+
+  &__icon {
+    height: 1.5625rem;
+    width: 1.5625rem;
+  }
+}

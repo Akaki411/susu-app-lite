@@ -1,0 +1,10 @@
+.live-dot {
+  display: inline-block;
+  height: 0.4rem;
+  width: 0.4rem;
+  margin-left: 0.5rem;
+  border-radius: 5rem;
+  background: var(--c-accent-2);
+  box-shadow: 0 0 3px 2px var(--live-glow);
+  animation: susu-live-pulse 2s ease-in-out infinite;
+}

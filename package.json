@@ -1,0 +1,42 @@
+{
+  "name": "susu-app-lite",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "bun@1.4.0",
+  "description": "Облегченная оффлайн версия PWA приложения ЮУрГУ онлайн",
+  "engines": {
+    "node": ">=22.18.0",
+    "bun": ">=1.4.0"
+  },
+  "scripts": {
+    "dev": "bun node_modules/rari/dist/cli.mjs dev",
+    "build": "bun node_modules/rari/dist/cli.mjs build",
+    "start": "bun node_modules/rari/dist/cli.mjs start",
+    "deploy:railway": "bun node_modules/rari/dist/cli.mjs deploy railway",
+    "deploy:render": "bun node_modules/rari/dist/cli.mjs deploy render",
+    "clean": "bun node_modules/rari/dist/cli.mjs clean",
+    "typecheck": "tsc -p tsconfig.json",
+    "postinstall": "bun scripts/patch-rari-runtime.mjs"
+  },
+  "dependencies": {
+    "@tanstack/react-virtual": "^3.14.10",
+    "qrcode": "^1.5.4",
+    "rari": "0.15.13",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "redis": "^6.2.1",
+    "sanitize-html": "^2.17.7"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.0",
+    "@types/node": "^26.2.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@types/sanitize-html": "^2.16.1",
+    "sass": "^1.103.1",
+    "typescript-7": "npm:typescript@^7.0.2",
+    "vite-plus": "^0.2.9"
+  }
+}

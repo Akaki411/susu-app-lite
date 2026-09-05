@@ -1,0 +1,19 @@
+@use '../abstracts/mixins' as *;
+
+.app-frame {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+
+  &__main {
+    position: relative;
+    min-height: 100vh;
+    min-width: 0;
+    flex: 1 1 auto;
+    padding-bottom: 6rem;
+
+    @include md {
+      padding-bottom: 0;
+    }
+  }
+}

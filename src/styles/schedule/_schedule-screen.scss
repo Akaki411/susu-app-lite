@@ -1,0 +1,157 @@
+@use '../abstracts/mixins' as *;
+
+.schedule {
+  &__header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--c-bg);
+  }
+
+  &__content {
+    min-height: 40vh;
+  }
+
+  &__body {
+    padding: 0 1.25rem;
+    min-width: 0;
+  }
+
+  &__nav-arrow {
+    display: none;
+    flex-shrink: 0;
+    height: 2.25rem;
+    width: 2.25rem;
+    border-radius: 0.75rem;
+    color: var(--c-text-2);
+
+    @include md {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &__nav-arrow-icon {
+    height: 1.125rem;
+    width: 1.125rem;
+  }
+
+  &__strip {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  &__day {
+    display: flex;
+    flex: 1 1 0%;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 1rem;
+    padding: 0.5rem 0.25rem;
+    opacity: 1;
+
+    &--weekend {
+      opacity: 0.55;
+    }
+
+    &--active {
+      opacity: 1;
+    }
+  }
+
+  &__day-dow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--c-text-3);
+  }
+
+  &__day-num {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--c-text);
+
+    &--active {
+      color: var(--c-accent);
+      font-weight: 800;
+    }
+  }
+
+  &__weeks {
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  &__weeks-scroll {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__week-card {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 0.125rem;
+    border: none;
+    border-radius: 1rem;
+    background: var(--c-surface);
+    padding: 0.625rem 0.875rem;
+
+    &--active {
+      background: var(--c-accent);
+      border-color: var(--c-accent);
+    }
+  }
+
+  &__week-title {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+    font-size: 0.78125rem;
+    font-weight: 700;
+    color: var(--c-text);
+
+    &--active {
+      color: var(--c-on-accent);
+    }
+  }
+
+  &__week-current-dot {
+    height: 0.3125rem;
+    width: 0.3125rem;
+    border-radius: 62.4375rem;
+    background: var(--c-accent-2);
+
+    &--active {
+      background: var(--c-on-accent);
+    }
+  }
+
+  &__week-range {
+    white-space: nowrap;
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--c-text-3);
+
+    &--active {
+      color: var(--c-on-accent);
+    }
+  }
+}

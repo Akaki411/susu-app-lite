@@ -1,0 +1,18 @@
+@mixin md {
+  @media (min-width: 48rem) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (min-width: 64rem) {
+    @content;
+  }
+}
+
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

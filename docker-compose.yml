@@ -1,0 +1,24 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env.docker.example
+    environment:
+      RAILWAY_ENVIRONMENT: docker
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "6767:6767"
+    volumes:
+      - susu_data:/app/data
+    networks:
+      - susu
+
+networks:
+  susu:
+
+volumes:
+  susu_data:

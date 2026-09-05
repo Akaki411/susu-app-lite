@@ -1,0 +1,120 @@
+@use '../abstracts/mixins' as *;
+
+.services {
+  &__body {
+    padding: 0 1.25rem;
+
+    @include md {
+      max-width: 40rem;
+    }
+  }
+
+  &__profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.25rem 0 1.25rem;
+    text-align: center;
+  }
+
+  &__avatar {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 6.5rem;
+    width: 6.5rem;
+    border-radius: 62.4375rem;
+    background: var(--c-accent);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--c-on-accent);
+  }
+
+  &__name {
+    font-size: 1.1875rem;
+    font-weight: 700;
+  }
+
+  &__speciality {
+    max-width: 17.5rem;
+    font-size: 0.8125rem;
+    color: var(--c-text-2);
+    margin-top: 0.5rem;
+  }
+
+  &__username {
+    margin: 0.4rem 0 0.4rem 0;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--c-text-3);
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.75rem;
+    border-bottom: 0.0625rem solid var(--c-divider);
+    padding-bottom: 1.125rem;
+  }
+
+  &__meta-label {
+    margin-bottom: 0.25rem;
+    font-size: 0.65625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--c-text-3);
+  }
+
+  &__meta-value {
+    font-size: 0.84375rem;
+    font-weight: 600;
+  }
+
+  &__meta-tap {
+    position: relative;
+    text-align: left;
+  }
+
+  &__meta-copied {
+    position: absolute;
+    top: -0.375rem;
+    left: 0;
+    white-space: nowrap;
+    border-radius: 62.4375rem;
+    background: var(--c-accent);
+    padding: 0.1875rem 0.5625rem;
+    font-size: 0.65625rem;
+    font-weight: 600;
+    color: var(--c-on-accent);
+    animation: susu-fade-in 0.15s ease;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 4.875rem;
+    grid-auto-flow: dense;
+    gap: 0.5rem;
+
+    @include md {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  &__signout {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--c-text-2);
+  }
+
+  &__signout-icon {
+    height: 1rem;
+    width: 1rem;
+  }
+}

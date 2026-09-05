@@ -1,0 +1,41 @@
+@use '../abstracts/mixins' as *;
+
+.rating {
+  &__body {
+    padding: 0 1.25rem;
+  }
+
+  &__groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    @include md {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: start;
+      gap: 1rem;
+    }
+  }
+
+  &__group {
+    min-width: 0;
+
+    @include md {
+      flex: 0 0 calc((100% - 1rem) / 2);
+      border-radius: 1.25rem;
+      border: 0.0625rem solid var(--c-divider);
+      background: var(--c-surface);
+      padding: 1rem;
+    }
+
+    @include lg {
+      flex-basis: calc((100% - 2rem) / 3);
+    }
+  }
+
+  &__group-list {
+    display: flex;
+    flex-direction: column;
+  }
+}
