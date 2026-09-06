@@ -8,3 +8,14 @@
     padding: 1.5rem 0;
   }
 }
+
+.error-fallback__retry {
+  display: block;
+  margin: 0.75rem auto 0;
+  border-radius: 0.75rem;
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}

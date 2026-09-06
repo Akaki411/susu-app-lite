@@ -3,7 +3,7 @@
 import {getAccessToken, getIdentity, getProfile, getRefreshToken, saveTokens} from './token-store'
 import {userNameFromToken} from './jwt'
 import type {
-    AdminStats,
+    AdminStatsResult,
     DebtSchedule,
     LoginResult,
     NewsArticle,
@@ -138,7 +138,7 @@ export const getJournal = (disciplineId: string, term: number): Promise<RatingJo
 
 export const getDebts = (): Promise<DebtSchedule[]> => getJson<DebtSchedule[]>('/api/debts', 10000);
 
-export const getAdminStats = (days = 7): Promise<AdminStats> => getJson<AdminStats>(`/api/admin/stats?days=${days}`);
+export const getAdminStats = (days = 7): Promise<AdminStatsResult> => getJson<AdminStatsResult>(`/api/admin/stats?days=${days}`);
 
 export const getNews = (page: number): Promise<NewsPage> => getJson<NewsPage>(`/api/news?page=${page}`, 10000);
 

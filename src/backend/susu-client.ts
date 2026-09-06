@@ -52,6 +52,7 @@ export interface RawLogin {
     photo?: string
     passTicket?: string
     libraryCardNumber?: string
+    email?: string
     firstName?: string
     middleName?: string
     lastName?: string
@@ -77,6 +78,14 @@ export const refresh = async (userName: string, identity: string, refreshToken: 
     }
 }
 
+const formatPhone = (raw: string | undefined): string | undefined => {
+    if (!raw) return undefined
+    const digits = raw.replace(/\D/g, '')
+    if (digits.length !== 11 || (digits[0] !== '7' && digits[0] !== '8')) return raw
+    const d = `7${digits.slice(1)}`
+    return `+7 (${d.slice(1, 4)}) ${d.slice(4, 7)}-${d.slice(7, 9)}-${d.slice(9, 11)}`
+}
+
 export const normalizeProfile = (raw: RawLogin): StudentProfile | null => {
     const s = raw.student?.[0] as Record<string, string> | undefined
     if (!s || typeof s.groupId !== 'string') return null
@@ -96,6 +105,11 @@ export const normalizeProfile = (raw: RawLogin): StudentProfile | null => {
         specialityName: s.specialityName,
         educationForm: s.educationForm,
         studyYears: s.studyYears,
+        email: raw.email,
+        phone: formatPhone(s.mobilePhone),
+        address: s.address,
+        recordBookNumber: s.creditBookNumber,
+        dormAccountNumber: s.accountNumber,
     }
 }
 
@@ -172,6 +186,13 @@ const instructorName = (list: Array<Record<string, string>> | undefined): string
     return [i.lastName, i.firstName, i.middleName].filter(Boolean).join(' ') || undefined
 }
 
+const teacherOf = (r: Record<string, unknown>): string | undefined =>
+    typeof r.instructor === 'string' && r.instructor !== ''
+        ? r.instructor
+        : instructorName(r.instructors as Array<Record<string, string>> | undefined)
+
+const markOf = (r: Record<string, unknown>): string | undefined => (typeof r.mark === 'string' ? r.mark : undefined)
+
 export const getRating = async (term: number, bearer: string): Promise<RatingSubject[]> => {
     const [subjRes, pracRes] = await Promise.all([
         get(`/api/StudyActivity/Subjects/${term}/ru`, bearer),
@@ -190,7 +211,8 @@ export const getRating = async (term: number, bearer: string): Promise<RatingSub
                 controlType: String(r.controlType ?? ''),
                 termNumber: Number(r.termNumber) || term,
                 rating: Number(r.rating) || 0,
-                teacher: instructorName(r.instructors as Array<Record<string, string>>),
+                teacher: teacherOf(r),
+                mark: markOf(r),
             })
         }
     }
@@ -205,7 +227,8 @@ export const getRating = async (term: number, bearer: string): Promise<RatingSub
                 controlType: 'практика',
                 termNumber: Number(r.termNumber) || term,
                 rating: Number(r.rating) || 0,
-                teacher: instructorName(r.instructors as Array<Record<string, string>>),
+                teacher: teacherOf(r),
+                mark: markOf(r),
                 isPractice: true,
             })
         }

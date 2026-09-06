@@ -30,19 +30,46 @@ const GRADED_LIKE_EXAM: RatingCategory[] = ['coursework', 'exam', 'diffCredit']
 
 export type RatingStatusKey = 'fail' | 'satisfactory' | 'good' | 'excellent' | 'creditFail' | 'creditPass'
 
+const STATUS_COLOR: Record<RatingStatusKey, string> = {
+  fail: 'var(--c-rate-low)',
+  satisfactory: 'var(--c-rate-satisfactory)',
+  good: 'var(--c-rate-mid)',
+  excellent: 'var(--c-rate-high)',
+  creditFail: 'var(--c-rate-low)',
+  creditPass: 'var(--c-rate-high)',
+}
+
+const MARK_STATUS: Record<string, RatingStatusKey> = {
+  'зачтено': 'creditPass',
+  'не зачтено': 'creditFail',
+  'незачтено': 'creditFail',
+  '5': 'excellent',
+  '4': 'good',
+  '3': 'satisfactory',
+  '2': 'fail',
+}
+
+const statusFromMark = (mark: string | undefined): RatingStatusKey | null => {
+  if (!mark) return null
+  return MARK_STATUS[mark.trim().toLowerCase()] ?? null
+}
+
 export const statusFor = (subject: RatingSubject): { color: string; statusKey: RatingStatusKey | null } => {
+  const fromMark = statusFromMark(subject.mark)
+  if (fromMark) return { color: STATUS_COLOR[fromMark], statusKey: fromMark }
+
   const pct = subject.rating
   if (pct <= 0) return { color: 'var(--c-text-3)', statusKey: null }
 
   if (GRADED_LIKE_EXAM.includes(categoryOf(subject.controlType))) {
-    if (pct < 60) return { color: 'var(--c-rate-low)', statusKey: 'fail' }
-    if (pct < 75) return { color: 'var(--c-rate-satisfactory)', statusKey: 'satisfactory' }
-    if (pct < 85) return { color: 'var(--c-rate-mid)', statusKey: 'good' }
-    return { color: 'var(--c-rate-high)', statusKey: 'excellent' }
+    if (pct < 60) return { color: STATUS_COLOR.fail, statusKey: 'fail' }
+    if (pct < 75) return { color: STATUS_COLOR.satisfactory, statusKey: 'satisfactory' }
+    if (pct < 85) return { color: STATUS_COLOR.good, statusKey: 'good' }
+    return { color: STATUS_COLOR.excellent, statusKey: 'excellent' }
   }
 
-  if (pct < 60) return { color: 'var(--c-rate-low)', statusKey: 'creditFail' }
-  return { color: 'var(--c-rate-high)', statusKey: 'creditPass' }
+  if (pct < 60) return { color: STATUS_COLOR.creditFail, statusKey: 'creditFail' }
+  return { color: STATUS_COLOR.creditPass, statusKey: 'creditPass' }
 }
 
 export const colorForPercent = (pct: number): string => {

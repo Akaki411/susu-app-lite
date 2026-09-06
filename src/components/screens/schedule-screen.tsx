@@ -16,7 +16,7 @@ import {useI18n} from '@/i18n'
 import {getSchedule} from '@/lib/api-client'
 import {getScheduleSource, setScheduleSource, type ScheduleSource} from '@/lib/schedule-source'
 import {readRaw, writeRaw} from '@/lib/token-store'
-import {useOfflineData} from '@/lib/swr'
+import {useForceRefreshIfEmpty, useOfflineData} from '@/lib/swr'
 import {useSwipe} from '@/lib/use-swipe'
 import {useNow} from '@/lib/use-now'
 import {
@@ -58,12 +58,16 @@ export default () => {
     const [calendarOpen, setCalendarOpen] = useState(false)
     const [slide, setSlide] = useState<{ dir: 'left' | 'right'; step: number } | null>(null)
 
+    const scheduleCacheKey = source ? `${source.kind}:${source.id}` : 'none'
+
     const {data, refreshing, refresh} = useOfflineData<ScheduleData>({
         store: 'schedule',
-        cacheKey: source ? `${source.kind}:${source.id}` : 'none',
+        cacheKey: scheduleCacheKey,
         enabled: !!source,
         fetcher: (force) => getSchedule(source!.id, source!.kind, {force}),
     })
+
+    useForceRefreshIfEmpty(scheduleCacheKey, data != null && data.events.length === 0, refreshing, refresh)
 
     const byDate = useMemo(() => groupByDate(data?.events ?? []), [data])
 

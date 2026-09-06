@@ -1,7 +1,15 @@
 @use '../abstracts/mixins' as *;
 
 .services {
+  &__viewport {
+    @include md {
+      display: flex;
+      justify-content: center;
+    }
+  }
+
   &__body {
+    width: 100%;
     padding: 0 1.25rem;
 
     @include md {
@@ -37,13 +45,6 @@
     font-weight: 700;
   }
 
-  &__speciality {
-    max-width: 17.5rem;
-    font-size: 0.8125rem;
-    color: var(--c-text-2);
-    margin-top: 0.5rem;
-  }
-
   &__username {
     margin: 0.4rem 0 0.4rem 0;
     font-size: 0.75rem;
@@ -52,11 +53,20 @@
   }
 
   &__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.75rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 1.25rem;
     border-bottom: 0.0625rem solid var(--c-divider);
     padding-bottom: 1.125rem;
+
+    @include md {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  &__meta-item,
+  &__meta-tap {
+    min-width: 0;
   }
 
   &__meta-label {
@@ -70,6 +80,7 @@
   &__meta-value {
     font-size: 0.84375rem;
     font-weight: 600;
+    overflow-wrap: anywhere;
   }
 
   &__meta-tap {

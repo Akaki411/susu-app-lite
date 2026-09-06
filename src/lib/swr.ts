@@ -68,3 +68,18 @@ export function useOfflineData<T>({
 
     return {data, loading, refreshing, fromNetwork, error, refresh}
 }
+
+export const useForceRefreshIfEmpty = (
+    key: string,
+    isEmpty: boolean,
+    refreshing: boolean,
+    refresh: (force?: boolean) => Promise<void>,
+): void => {
+    const forcedFor = useRef<string | null>(null)
+
+    useEffect(() => {
+        if (refreshing || !isEmpty || forcedFor.current === key) return
+        forcedFor.current = key
+        void refresh(true)
+    }, [key, isEmpty, refreshing, refresh])
+};

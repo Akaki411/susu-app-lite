@@ -2,6 +2,7 @@
 // Каркас приложения: боковой рейл + контент + нижний навбар + глобальные шторка/кнопка пропуска
 
 import {useEffect, type ReactNode} from 'react'
+import {ErrorBoundary} from '@/components/common/error-boundary.tsx'
 import BottomNav from '@/components/nav/bottom-nav.tsx'
 import DesktopRail from '@/components/nav/desktop-rail.tsx'
 import {PassFab} from '@/components/pass/pass-fab.tsx'
@@ -30,7 +31,9 @@ export default ({children}: { children: ReactNode }) => {
     return (
         <div className="app-frame">
             <DesktopRail/>
-            <main className="app-frame__main">{children}</main>
+            <main className="app-frame__main">
+                <ErrorBoundary resetKey={pathname}>{children}</ErrorBoundary>
+            </main>
             <BottomNav/>
             <PassFab/>
             <PassSheet/>

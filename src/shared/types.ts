@@ -16,6 +16,11 @@ export interface StudentProfile {
     specialityName?: string
     educationForm?: string
     studyYears?: string
+    email?: string
+    phone?: string
+    address?: string
+    recordBookNumber?: string
+    dormAccountNumber?: string
 }
 
 export interface AuthTokens {
@@ -71,6 +76,7 @@ export interface RatingSubject {
     rating: number
     teacher?: string
     isPractice?: boolean
+    mark?: string
 }
 
 export interface RatingData {
@@ -152,3 +158,5 @@ export interface AdminStats {
     uniqueToday: number
     daily: DailyStat[]
 }
+
+export type AdminStatsResult = { isAdmin: false } | ({ isAdmin: true } & AdminStats)

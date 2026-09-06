@@ -43,7 +43,10 @@ self.addEventListener('fetch', (event) => {
                 (hit) =>
                     hit ||
                     fetch(req).then((res) => {
-                        if (res.status === 200) caches.open(CACHE).then((c) => c.put(req, res.clone()))
+                        if (res.status === 200) {
+                            const copy = res.clone()
+                            caches.open(CACHE).then((c) => c.put(req, copy))
+                        }
                         return res
                     }),
             ),

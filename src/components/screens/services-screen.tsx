@@ -12,7 +12,7 @@ import {navigate} from '@/lib/router'
 import {useSettings} from '@/lib/settings'
 import {clearSession, getProfile} from '@/lib/token-store'
 import {SERVICE_META, services} from '@/services/registry'
-import type {AdminStats} from '@/shared/types'
+import type {AdminStatsResult} from '@/shared/types'
 
 const initialsOf = (first: string, last: string) => `${first[0] ?? ''}${last[0] ?? ''}`.toUpperCase()
 
@@ -23,16 +23,59 @@ const COPIED_HINT_MS = 1000
 
 type SheetView = 'none' | 'settings' | 'tiles'
 
+const MetaCopyRow = ({
+    label,
+    value,
+    copied,
+    copiedLabel,
+    onCopy
+}: {
+    label: string
+    value: string
+    copied: boolean
+    copiedLabel: string
+    onCopy: () => void
+}) => (
+    <button type="button" className="services__meta-tap" onClick={onCopy}>
+        <div className="services__meta-label">{label}</div>
+        <div className="services__meta-value">{value}</div>
+        {copied && <div className="services__meta-copied">{copiedLabel}</div>}
+    </button>
+);
+
 export default () => {
     const {t} = useI18n()
     const {settings} = useSettings()
     const [sheet, setSheet] = useState<SheetView>('none')
-    const [adminStats, setAdminStats] = useState<AdminStats | null>(null)
+    const [adminStats, setAdminStats] = useState<AdminStatsResult | null>(null)
     const [copied, setCopied] = useState(false)
+    const [copiedField, setCopiedField] = useState<string | null>(null)
     const tapCount = useRef(0)
     const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const copiedFieldTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
     const profile = getProfile()
     const visibleTiles = SERVICE_META.filter((s) => (settings.tiles[s.id]?.enabled ?? true)).length
+
+    const copyableMeta: Array<{ field: string; label: string; value: string | undefined }> = [
+        {field: 'faculty', label: t('services.faculty'), value: profile?.faculty},
+        {field: 'speciality', label: t('services.speciality'), value: profile?.specialityName},
+        {field: 'email', label: t('services.email'), value: profile?.email},
+        {field: 'phone', label: t('services.phone'), value: profile?.phone},
+        {field: 'address', label: t('services.address'), value: profile?.address},
+        {field: 'recordBook', label: t('services.recordBook'), value: profile?.recordBookNumber},
+        {field: 'dormAccount', label: t('services.dormAccount'), value: profile?.dormAccountNumber},
+    ]
+    const visibleCopyableMeta = copyableMeta.filter(
+        (m): m is { field: string; label: string; value: string } => !!m.value,
+    )
+
+    const copyValue = (field: string, value: string) => {
+        void navigator.clipboard?.writeText(value).then(() => {
+            if (copiedFieldTimer.current) clearTimeout(copiedFieldTimer.current)
+            setCopiedField(field)
+            copiedFieldTimer.current = setTimeout(() => setCopiedField(null), COPIED_HINT_MS)
+        })
+    }
 
     useEffect(() => {
         if (!profile) return
@@ -71,7 +114,7 @@ export default () => {
         }, TAP_WINDOW_MS)
     }
 
-    const todayStat = adminStats?.daily[0]
+    const todayStat = adminStats?.isAdmin ? adminStats.daily[0] : undefined
 
     return (
         <div className="screen">
@@ -83,78 +126,88 @@ export default () => {
                 />
             </div>
 
-            <div className="services__body">
-                {profile && (
-                    <>
-                        <div className="services__profile">
-                            <div className="services__avatar">{initialsOf(profile.firstName, profile.lastName)}</div>
-                            <div className="services__username">@{profile.userName}</div>
-                            <div className="services__name">
-                                {profile.lastName} {profile.firstName} {profile.middleName ?? ''}
-                            </div>
-                            {profile.specialityName && <div className="services__speciality">{profile.specialityName}</div>}
-
-                        </div>
-
-                        <div className="services__meta">
-                            <button type="button" className="services__meta-tap" onClick={onGroupTap}>
-                                <div className="services__meta-label">{t('services.group')}</div>
-                                <div className="services__meta-value">{profile.groupName}</div>
-                                {copied && <div className="services__meta-copied">{t('services.idCopied')}</div>}
-                            </button>
-                            {profile.studyYears && (
-                                <div>
-                                    <div className="services__meta-label">{t('services.form')}</div>
-                                    <div
-                                        className="services__meta-value">{profile.educationForm ?? t('services.formFull')}</div>
+            <div className="services__viewport">
+                <div className="services__body">
+                    {profile && (
+                        <>
+                            <div className="services__profile">
+                                <div className="services__avatar">{initialsOf(profile.firstName, profile.lastName)}</div>
+                                <div className="services__username">@{profile.userName}</div>
+                                <div className="services__name">
+                                    {profile.lastName} {profile.firstName} {profile.middleName ?? ''}
                                 </div>
-                            )}
-                        </div>
-                    </>
-                )}
-
-                <div className="section-title section-title--spaced">{t('services.microservices')}</div>
-                {services.length === 0 ? (
-                    <div className="empty-state empty-state--compact">{t('services.empty')}</div>
-                ) : visibleTiles === 0 ? (
-                    <div className="empty-state empty-state--compact">{t('settings.tilesAllHidden')}</div>
-                ) : (
-                    <div className="services__grid">{services}</div>
-                )}
-
-                {adminStats && (
-                    <div className="admin-stats">
-                        <div className="admin-stats__head">
-                            <Icon name="chartBar" className="admin-stats__icon"/>
-                            <span className="section-title">{t('admin.title')}</span>
-                        </div>
-                        <div className="admin-stats__kpis">
-                            <div className="admin-stats__kpi">
-                                <div className="admin-stats__kpi-value">{adminStats.uniqueToday}</div>
-                                <div className="admin-stats__kpi-label">{t('admin.uniqueToday')}</div>
                             </div>
-                            <div className="admin-stats__kpi">
-                                <div className="admin-stats__kpi-value">{todayStat?.requests ?? 0}</div>
-                                <div className="admin-stats__kpi-label">{t('admin.requestsToday')}</div>
+
+                            <div className="services__meta">
+                                <button type="button" className="services__meta-tap" onClick={onGroupTap}>
+                                    <div className="services__meta-label">{t('services.group')}</div>
+                                    <div className="services__meta-value">{profile.groupName}</div>
+                                    {copied && <div className="services__meta-copied">{t('services.idCopied')}</div>}
+                                </button>
+                                {profile.studyYears && (
+                                    <div className="services__meta-item">
+                                        <div className="services__meta-label">{t('services.form')}</div>
+                                        <div
+                                            className="services__meta-value">{profile.educationForm ?? t('services.formFull')}</div>
+                                    </div>
+                                )}
+                                {visibleCopyableMeta.map((m) => (
+                                    <MetaCopyRow
+                                        key={m.field}
+                                        label={m.label}
+                                        value={m.value}
+                                        copied={copiedField === m.field}
+                                        copiedLabel={t('services.valueCopied')}
+                                        onCopy={() => copyValue(m.field, m.value)}
+                                    />
+                                ))}
                             </div>
-                        </div>
-                        <div className="admin-stats__days">
-                            {adminStats.daily.map((d) => (
-                                <div key={d.date} className="admin-stats__day">
-                                    <span className="admin-stats__day-date">{d.date}</span>
-                                    <span className="admin-stats__day-nums">
-                                        {t('admin.dayRequests', {n: d.requests})} · {t('admin.dayUnique', {n: d.uniqueIps})}
-                                    </span>
+                        </>
+                    )}
+
+                    <div className="section-title section-title--spaced">{t('services.microservices')}</div>
+                    {services.length === 0 ? (
+                        <div className="empty-state empty-state--compact">{t('services.empty')}</div>
+                    ) : visibleTiles === 0 ? (
+                        <div className="empty-state empty-state--compact">{t('settings.tilesAllHidden')}</div>
+                    ) : (
+                        <div className="services__grid">{services}</div>
+                    )}
+
+                    {adminStats?.isAdmin && (
+                        <div className="admin-stats">
+                            <div className="admin-stats__head">
+                                <Icon name="chartBar" className="admin-stats__icon"/>
+                                <span className="section-title">{t('admin.title')}</span>
+                            </div>
+                            <div className="admin-stats__kpis">
+                                <div className="admin-stats__kpi">
+                                    <div className="admin-stats__kpi-value">{adminStats.uniqueToday}</div>
+                                    <div className="admin-stats__kpi-label">{t('admin.uniqueToday')}</div>
                                 </div>
-                            ))}
+                                <div className="admin-stats__kpi">
+                                    <div className="admin-stats__kpi-value">{todayStat?.requests ?? 0}</div>
+                                    <div className="admin-stats__kpi-label">{t('admin.requestsToday')}</div>
+                                </div>
+                            </div>
+                            <div className="admin-stats__days">
+                                {adminStats.daily.map((d) => (
+                                    <div key={d.date} className="admin-stats__day">
+                                        <span className="admin-stats__day-date">{d.date}</span>
+                                        <span className="admin-stats__day-nums">
+                                            {t('admin.dayRequests', {n: d.requests})} · {t('admin.dayUnique', {n: d.uniqueIps})}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                <button type="button" onClick={signOut} className="services__signout">
-                    <Icon name="logout" className="services__signout-icon"/>
-                    {t('services.signOut')}
-                </button>
+                    <button type="button" onClick={signOut} className="services__signout">
+                        <Icon name="logout" className="services__signout-icon"/>
+                        {t('services.signOut')}
+                    </button>
+                </div>
             </div>
 
             <ServicesSettingsSheet

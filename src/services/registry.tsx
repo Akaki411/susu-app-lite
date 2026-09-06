@@ -23,6 +23,7 @@ export const SERVICE_META: ServiceMeta[] = [
   { id: 'edu', labelKey: 'services.eduCourse', icon: '/icons/document.webp' },
   { id: 'studlk', labelKey: 'services.personalAccount', icon: '/icons/key.webp' },
   { id: 'debts', labelKey: 'services.debts', icon: '/icons/contract.webp' },
+  { id: 'deanQueue', labelKey: 'services.deanQueue', icon: '/icons/clock.webp' },
 ]
 
 export const services: ReactElement[] = [
@@ -31,4 +32,5 @@ export const services: ReactElement[] = [
   <LinkService key="edu" id="edu" url="https://edu.susu.ru/login/index.php" labelKey="services.eduCourse" icon="/icons/document.webp" tone="b" defaultSize={2} />,
   <LinkService key="studlk" id="studlk" url="https://studlk.susu.ru/Account/Login" labelKey="services.personalAccount" icon="/icons/key.webp" tone="a" defaultSize={2} />,
   <DebtsService key="debts" />,
+  <LinkService key="deanQueue" id="deanQueue" url="https://q.susu.ru" labelKey="services.deanQueue" icon="/icons/clock.webp" tone="b" defaultSize={2} />,
 ]

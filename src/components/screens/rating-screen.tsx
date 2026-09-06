@@ -12,7 +12,7 @@ import {useI18n} from '@/i18n'
 import {getRating, getStudyPlan} from '@/lib/api-client'
 import {groupRatingByCategory} from '@/lib/rating-utils'
 import {readRaw, writeRaw} from '@/lib/token-store'
-import {useOfflineData} from '@/lib/swr'
+import {useForceRefreshIfEmpty, useOfflineData} from '@/lib/swr'
 import {useSwipe} from '@/lib/use-swipe'
 import type {RatingData, RatingSubject, StudyPlan} from '@/shared/types'
 
@@ -32,11 +32,15 @@ export default () => {
 
     const activeTerm = term || plan?.currentTerm || 1
 
+    const ratingCacheKey = `rating:${activeTerm}`
+
     const {data, refreshing, refresh} = useOfflineData<RatingData>({
         store: 'rating',
-        cacheKey: `rating:${activeTerm}`,
+        cacheKey: ratingCacheKey,
         fetcher: (force) => getRating(activeTerm, force),
     })
+
+    useForceRefreshIfEmpty(ratingCacheKey, data != null && data.subjects.length === 0, refreshing, refresh)
 
     const {handlers, pullDistance} = useSwipe({onPullRefresh: () => void refresh(true)})
 
