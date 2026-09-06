@@ -40,6 +40,10 @@
 
   &__label {
     flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     text-align: left;
     font-size: 0.84375rem;
     font-weight: 500;
@@ -50,6 +54,11 @@
   }
 
   &__hint {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 0.71875rem;
     color: var(--c-text-3);
   }

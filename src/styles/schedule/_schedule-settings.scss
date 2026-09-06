@@ -1,4 +1,60 @@
 .schedule-settings {
+  &__recent {
+    margin-bottom: 0.625rem;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__recent-card {
+    display: flex;
+    flex: none;
+    max-width: 9rem;
+    flex-direction: column;
+    gap: 0.125rem;
+    border: none;
+    border-radius: 1rem;
+    background: var(--c-surface);
+    padding: 0.625rem 0.875rem;
+    text-align: left;
+
+    &--active {
+      background: var(--c-accent);
+    }
+  }
+
+  &__recent-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.78125rem;
+    font-weight: 700;
+    color: var(--c-text);
+
+    &--active {
+      color: var(--c-on-accent);
+    }
+  }
+
+  &__recent-hint {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.6875rem;
+    color: var(--c-text-3);
+
+    &--active {
+      color: var(--c-on-accent);
+    }
+  }
+
   &__search {
     width: 100%;
     border: none;

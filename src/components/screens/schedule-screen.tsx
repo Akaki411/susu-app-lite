@@ -14,7 +14,13 @@ import {CalendarSheet} from '@/components/schedule/calendar-sheet.tsx'
 import {ScheduleSettingsSheet} from '@/components/schedule/schedule-settings-sheet.tsx'
 import {useI18n} from '@/i18n'
 import {getSchedule} from '@/lib/api-client'
-import {getScheduleSource, setScheduleSource, type ScheduleSource} from '@/lib/schedule-source'
+import {
+    clearViewedScheduleSource,
+    getOwnScheduleSource,
+    getScheduleSource,
+    setViewedScheduleSource,
+    type ScheduleSource,
+} from '@/lib/schedule-source'
 import {readRaw, writeRaw} from '@/lib/token-store'
 import {useForceRefreshIfEmpty, useOfflineData} from '@/lib/swr'
 import {useSwipe} from '@/lib/use-swipe'
@@ -47,6 +53,7 @@ export default () => {
     const {t} = useI18n()
     const now = useNow()
     const [source, setSource] = useState<ScheduleSource | null>(() => getScheduleSource())
+    const ownSource = useMemo(() => getOwnScheduleSource(), [])
     const [mode, setModeState] = useState<Mode>(() => (readRaw(MODE_KEY) === 'weeks' ? 'weeks' : 'dates'))
     const setMode = (m: Mode) => {
         writeRaw(MODE_KEY, m)
@@ -91,7 +98,11 @@ export default () => {
     }, [byDate, now])
 
     const onSourceChange = (s: ScheduleSource) => {
-        setScheduleSource(s)
+        if (ownSource && ownSource.kind === s.kind && ownSource.id === s.id) {
+            clearViewedScheduleSource()
+        } else {
+            setViewedScheduleSource(s)
+        }
         setSource(s)
     };
 
@@ -268,6 +279,8 @@ export default () => {
                 mode={mode}
                 onModeChange={setMode}
                 onSourceChange={onSourceChange}
+                own={ownSource}
+                current={source}
             />
             <CalendarSheet
                 open={calendarOpen}
