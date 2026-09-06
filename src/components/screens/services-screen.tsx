@@ -4,6 +4,7 @@
 import {useEffect, useRef, useState} from 'react'
 import {PageHeader} from '@/components/common/page-header.tsx'
 import {Icon} from '@/components/common/icons'
+import {AdminStatsPanel} from '@/components/services/admin-stats-panel.tsx'
 import {ServicesSettingsSheet} from '@/components/services/services-settings-sheet.tsx'
 import {TileSettingsSheet} from '@/components/services/tile-settings-sheet.tsx'
 import {useI18n} from '@/i18n'
@@ -80,7 +81,7 @@ export default () => {
     useEffect(() => {
         if (!profile) return
         let cancelled = false
-        getAdminStats()
+        getAdminStats(14)
             .then((s) => {
                 if (!cancelled) setAdminStats(s)
             })
@@ -113,8 +114,6 @@ export default () => {
             tapCount.current = 0
         }, TAP_WINDOW_MS)
     }
-
-    const todayStat = adminStats?.isAdmin ? adminStats.daily[0] : undefined
 
     return (
         <div className="screen">
@@ -174,34 +173,7 @@ export default () => {
                         <div className="services__grid">{services}</div>
                     )}
 
-                    {adminStats?.isAdmin && (
-                        <div className="admin-stats">
-                            <div className="admin-stats__head">
-                                <Icon name="chartBar" className="admin-stats__icon"/>
-                                <span className="section-title">{t('admin.title')}</span>
-                            </div>
-                            <div className="admin-stats__kpis">
-                                <div className="admin-stats__kpi">
-                                    <div className="admin-stats__kpi-value">{adminStats.uniqueToday}</div>
-                                    <div className="admin-stats__kpi-label">{t('admin.uniqueToday')}</div>
-                                </div>
-                                <div className="admin-stats__kpi">
-                                    <div className="admin-stats__kpi-value">{todayStat?.requests ?? 0}</div>
-                                    <div className="admin-stats__kpi-label">{t('admin.requestsToday')}</div>
-                                </div>
-                            </div>
-                            <div className="admin-stats__days">
-                                {adminStats.daily.map((d) => (
-                                    <div key={d.date} className="admin-stats__day">
-                                        <span className="admin-stats__day-date">{d.date}</span>
-                                        <span className="admin-stats__day-nums">
-                                            {t('admin.dayRequests', {n: d.requests})} · {t('admin.dayUnique', {n: d.uniqueIps})}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    {adminStats?.isAdmin && <AdminStatsPanel stats={adminStats}/>}
 
                     <button type="button" onClick={signOut} className="services__signout">
                         <Icon name="logout" className="services__signout-icon"/>

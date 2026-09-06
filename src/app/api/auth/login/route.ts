@@ -1,7 +1,9 @@
 // POST /api/auth/login - проксирует к внешнему API и нормализует ответ
 
+import {addToHll, deviceBucketFor, roleBucketFor} from '@/backend/analytics'
 import {withApi} from '@/backend/api-middleware'
 import {error, json} from '@/backend/http'
+import {decodeJwt} from '@/backend/jwt'
 import {login, normalizeProfile} from '@/backend/susu-client'
 import type {LoginResult} from '@/shared/types'
 
@@ -33,6 +35,14 @@ export async function POST(request: Request): Promise<Response> {
             tokens: {accessToken: raw.accessToken, refreshToken: raw.refreshToken},
             profile: profile ?? undefined,
         }
+
+        const claims = decodeJwt(raw.accessToken)
+        if (claims?.Id) {
+            const role = claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+            addToHll(roleBucketFor(role), claims.Id)
+            addToHll(deviceBucketFor(request.headers.get('user-agent')), claims.Id)
+        }
+
         return json(result, 200)
     })
 }

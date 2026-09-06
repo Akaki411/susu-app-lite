@@ -20,6 +20,7 @@
 
   &__kpis {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.625rem;
     margin-bottom: 0.75rem;
   }
@@ -41,6 +42,84 @@
   &__kpi-label {
     margin-top: 0.125rem;
     font-size: 0.6875rem;
+    color: var(--c-text-3);
+  }
+
+  &__section-title {
+    margin: 0.875rem 0 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--c-text-3);
+  }
+
+  &__chart {
+    display: block;
+    width: 100%;
+    height: 3.5rem;
+    overflow: visible;
+  }
+
+  &__chart-empty {
+    padding: 0.75rem 0;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--c-text-3);
+  }
+
+  &__bar {
+    fill: var(--c-accent);
+  }
+
+  &__appearance {
+    margin-top: 0.625rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.375rem;
+    border-radius: 0.75rem;
+    background: var(--c-surface);
+    padding: 0.625rem 0.75rem;
+  }
+
+  &__appearance-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--c-accent);
+  }
+
+  &__appearance-hint {
+    font-size: 0.75rem;
+    color: var(--c-text-3);
+  }
+
+  &__usage {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__usage-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    border-top: 0.0625rem solid var(--c-divider);
+    padding: 0.4375rem 0;
+
+    &:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+  }
+
+  &__usage-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--c-text-2);
+  }
+
+  &__usage-values {
+    font-size: 0.71875rem;
     color: var(--c-text-3);
   }
 

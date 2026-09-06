@@ -17,8 +17,12 @@ const P = 14
 const M = 1 << P
 const ALPHA = 0.7213 / (1 + 1.079 / M)
 
-class HyperLogLog {
-    private registers = new Uint8Array(M)
+export class HyperLogLog {
+    private registers: Uint8Array
+
+    constructor(registers?: Uint8Array) {
+        this.registers = registers ?? new Uint8Array(M)
+    }
 
     add(value: string): void {
         const h = hash64(value)
@@ -50,6 +54,19 @@ class HyperLogLog {
             estimate = M * Math.log(M / zeros)
         }
         return Math.round(estimate)
+    }
+
+    serialize(): string {
+        return Buffer.from(this.registers).toString('base64')
+    }
+
+    static deserialize(data: string): HyperLogLog {
+        try {
+            const bytes = Buffer.from(data, 'base64')
+            if (bytes.length === M) return new HyperLogLog(new Uint8Array(bytes))
+        } catch {
+        }
+        return new HyperLogLog()
     }
 }
 

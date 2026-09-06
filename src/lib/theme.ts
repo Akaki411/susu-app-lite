@@ -1,6 +1,7 @@
 'use client'
 
 import {useEffect, useState} from 'react'
+import {sendTelemetry} from './telemetry'
 import {readRaw, storageKeys, writeRaw} from './token-store'
 
 export type Theme = 'system' | 'light' | 'dark'
@@ -20,6 +21,7 @@ export const applyTheme = (theme: Theme): void => {
 export const setTheme = (theme: Theme): void => {
     writeRaw(storageKeys.theme, theme)
     applyTheme(theme)
+    sendTelemetry('theme', theme)
 };
 
 export const isDarkActive = (): boolean => {

@@ -5,7 +5,11 @@ import {dirname} from 'node:path'
 import {DatabaseSync} from 'node:sqlite'
 import {config} from '../env'
 
-mkdirSync(dirname(config.sqlitePath), {recursive: true})
+try {
+    mkdirSync(dirname(config.sqlitePath), {recursive: true})
+} catch (e) {
+    if ((e as NodeJS.ErrnoException)?.code !== 'EEXIST') throw e
+}
 
 const g = globalThis as unknown as { __susuDb?: DatabaseSync }
 export const db: DatabaseSync = g.__susuDb ?? (g.__susuDb = new DatabaseSync(config.sqlitePath))
@@ -23,6 +27,21 @@ if (!(globalThis as unknown as { __susuDbInit?: boolean }).__susuDbInit) {
            requests INTEGER NOT NULL DEFAULT 0,
            uniqueIps INTEGER NOT NULL DEFAULT 0,
            byEndpoint TEXT NOT NULL DEFAULT '{}'
+        )
+    `)
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS analytics_hll (
+           id TEXT PRIMARY KEY,
+           sketch TEXT NOT NULL,
+           updatedAt TEXT NOT NULL
+        )
+    `)
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS analytics_counters (
+           category TEXT NOT NULL,
+           key TEXT NOT NULL,
+           count INTEGER NOT NULL DEFAULT 0,
+           PRIMARY KEY (category, key)
         )
     `)
     if (config.adminSeed) {

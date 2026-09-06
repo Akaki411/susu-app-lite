@@ -154,9 +154,29 @@ export interface DailyStat {
     byEndpoint: Record<string, number>
 }
 
+export interface AdminAuthUsers {
+    student: number
+    instructor: number
+    other: number
+    total: number
+}
+
+export interface AdminSettingsUsage {
+    theme: Record<string, number>
+    passButtonMode: Record<string, number>
+    tileResize: Record<string, number>
+    notifications: Record<string, number>
+    feedEnabled: Record<string, number>
+    language: Record<string, number>
+}
+
 export interface AdminStats {
     uniqueToday: number
     daily: DailyStat[]
+    authUsers: AdminAuthUsers
+    appearanceChangers: number
+    devices: { desktop: number; mobile: number }
+    settingsUsage: AdminSettingsUsage
 }
 
 export type AdminStatsResult = { isAdmin: false } | ({ isAdmin: true } & AdminStats)

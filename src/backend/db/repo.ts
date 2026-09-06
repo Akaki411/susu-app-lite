@@ -1,6 +1,7 @@
 // Мини ORM для взаимодействий с БД. Дневную статистику буферизуем в ОЗУ и периодически
 // сбрасываем в SQLite чтобы не делать запись в БД на каждый HTTP-запрос
 
+import {getAnalyticsSummary} from '../analytics'
 import {countUniqueIp} from '../hll'
 import {db} from './sqlite'
 
@@ -72,5 +73,5 @@ export const getStats = async (days = 30) => {
     const rows = db.prepare('SELECT * FROM daily_stats ORDER BY date DESC LIMIT ?').all(days) as unknown as DailyStatRow[]
     const daily = rows.map((r) => ({...r, byEndpoint: JSON.parse(r.byEndpoint) as Record<string, number>}))
     const uniqueToday = await countUniqueIp()
-    return {uniqueToday, daily}
+    return {uniqueToday, daily, ...getAnalyticsSummary()}
 }

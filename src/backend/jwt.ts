@@ -25,3 +25,6 @@ export const userIdFromAuth = (authHeader: string | null): string | null => {
     const token = authHeader.replace(/^Bearer\s+/i, '')
     return decodeJwt(token)?.Id ?? null
 }
+
+export const roleFromToken = (token: string | null | undefined): string | null =>
+    decodeJwt(token)?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ?? null

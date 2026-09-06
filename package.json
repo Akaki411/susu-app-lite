@@ -17,6 +17,7 @@
     "deploy:render": "bun node_modules/rari/dist/cli.mjs deploy render",
     "clean": "bun node_modules/rari/dist/cli.mjs clean",
     "typecheck": "tsc -p tsconfig.json",
+    "addadmin": "bun scripts/add-admin.mjs",
     "postinstall": "bun scripts/patch-rari-runtime.mjs"
   },
   "dependencies": {

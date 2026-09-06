@@ -1,6 +1,7 @@
 'use client'
 
 import {useEffect, useState} from 'react'
+import {sendTelemetry} from './telemetry'
 import {readRaw, storageKeys, writeRaw} from './token-store'
 import type {TileSize} from '@/services/types'
 
@@ -58,6 +59,7 @@ export const updateTile = (id: string, defaultSize: TileSize, patch: Partial<Til
     const fresh = getSettings()
     const current = tileConfig(fresh, id, defaultSize)
     saveSettings({...fresh, tiles: {...fresh.tiles, [id]: {...current, ...patch}}})
+    if (patch.size != null) sendTelemetry('tileResize', String(patch.size))
 };
 
 export const useSettings = () => {
@@ -74,6 +76,10 @@ export const useSettings = () => {
         const next = {...getSettings(), ...patch}
         saveSettings(next)
         setSettings(next)
+        if (patch.notifications != null) sendTelemetry('notifications', patch.notifications ? 'on' : 'off')
+        if (patch.feedEnabled != null) sendTelemetry('feedEnabled', patch.feedEnabled ? 'on' : 'off')
+        if (patch.passButtonMode != null) sendTelemetry('passButtonMode', patch.passButtonMode)
+        if (patch.language != null) sendTelemetry('language', patch.language)
     }
 
     return {settings, update}
