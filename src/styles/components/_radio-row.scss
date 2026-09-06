@@ -32,6 +32,12 @@
     background: var(--c-accent);
   }
 
+  &__flag {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
   &__label {
     flex: 1 1 auto;
     text-align: left;
@@ -46,10 +52,5 @@
   &__hint {
     font-size: 0.71875rem;
     color: var(--c-text-3);
-
-    &--block {
-      display: block;
-      margin: 0.625rem 0 0;
-    }
   }
 }

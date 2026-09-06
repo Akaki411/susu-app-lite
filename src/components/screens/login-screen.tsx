@@ -87,7 +87,26 @@ export default () => {
 
                     <InstallPwaButton/>
 
-                    <p className="login__copyright">{t('login.copyright')}</p>
+                    <p className="login__disclaimer">{t('login.unofficialNotice')}</p>
+                    <p className="login__links">
+                        <a
+                            href="https://github.com/Akaki411/susu-app-lite"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="login__link"
+                        >
+                            {t('login.sourceCode')}
+                        </a>
+                        <span className="login__links-dot" aria-hidden="true">·</span>
+                        <a
+                            href="https://t.me/akaki411"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="login__link"
+                        >
+                            {t('login.author')}: @akaki411
+                        </a>
+                    </p>
                 </form>
             </div>
             <LanguageSheet open={langOpen} onClose={() => setLangOpen(false)}/>

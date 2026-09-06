@@ -7,14 +7,24 @@ import type {TileSize} from '@/services/types'
 
 export type PassButtonMode = 'fab' | 'navbar'
 
-export type LanguageCode = 'ru'
+export type LanguageCode = 'ru' | 'en' | 'fr' | 'es' | 'ar' | 'zh'
 
 export interface LanguageOption {
     code: LanguageCode
     label: string
+    flag: string
 }
 
-export const LANGUAGES: LanguageOption[] = [{code: 'ru', label: 'Русский'}]
+export const LANGUAGES: LanguageOption[] = [
+    {code: 'ru', label: 'Русский', flag: '🇷🇺'},
+    {code: 'en', label: 'English', flag: '🇬🇧'},
+    {code: 'fr', label: 'Français', flag: '🇫🇷'},
+    {code: 'es', label: 'Español', flag: '🇪🇸'},
+    {code: 'ar', label: 'العربية', flag: '🇸🇦'},
+    {code: 'zh', label: '中文', flag: '🇨🇳'},
+]
+
+const isLanguageCode = (v: unknown): v is LanguageCode => LANGUAGES.some((l) => l.code === v)
 
 export interface TileConfig {
     size: TileSize
@@ -41,7 +51,9 @@ export const getSettings = (): Settings => {
     const raw = readRaw(storageKeys.settings)
     if (!raw) return {...DEFAULTS}
     try {
-        return {...DEFAULTS, ...(JSON.parse(raw) as Partial<Settings>)}
+        const merged = {...DEFAULTS, ...(JSON.parse(raw) as Partial<Settings>)}
+        if (!isLanguageCode(merged.language)) merged.language = DEFAULTS.language
+        return merged
     } catch {
         return {...DEFAULTS}
     }

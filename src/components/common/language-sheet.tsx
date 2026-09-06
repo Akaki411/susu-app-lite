@@ -26,13 +26,13 @@ export const LanguageSheet = ({open, onClose}: { open: boolean; onClose: () => v
                         <span className={`radio-row__dot${active ? ' radio-row__dot--active' : ''}`}>
                             {active && <span className="radio-row__dot-fill"/>}
                         </span>
+                        <span className="radio-row__flag" aria-hidden="true">{lang.flag}</span>
                         <span className={`radio-row__label${active ? ' radio-row__label--active' : ''}`}>
                             {lang.label}
                         </span>
                     </button>
                 )
             })}
-            {LANGUAGES.length < 2 && <p className="radio-row__hint radio-row__hint--block">{t('settings.languageOnlyRu')}</p>}
         </Sheet>
     )
 }

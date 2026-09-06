@@ -55,7 +55,7 @@ export const ServicesSettingsSheet = ({
     const {settings, update} = useSettings()
     const enabledTiles = SERVICE_META.filter((s) => (settings.tiles[s.id]?.enabled ?? true)).length
     const [langOpen, setLangOpen] = useState(false)
-    const currentLanguage = LANGUAGES.find((l) => l.code === settings.language)?.label ?? LANGUAGES[0]!.label
+    const currentLanguage = LANGUAGES.find((l) => l.code === settings.language) ?? LANGUAGES[0]!
 
     return (
         <>
@@ -107,7 +107,10 @@ export const ServicesSettingsSheet = ({
 
                 <div className="section-title section-title--spaced">{t('settings.language')}</div>
                 <button type="button" onClick={() => setLangOpen(true)} className="settings-nav-row">
-                    <span className="settings-nav-row__label">{currentLanguage}</span>
+                    <Icon name="world" className="settings-nav-row__icon"/>
+                    <span className="settings-nav-row__label">
+                        <span aria-hidden="true">{currentLanguage.flag}</span> {currentLanguage.label}
+                    </span>
                     <Icon name="chevronRight" className="settings-nav-row__chevron"/>
                 </button>
             </Sheet>

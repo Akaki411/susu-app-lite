@@ -68,7 +68,7 @@ const VALUE_LABELS: Record<keyof AdminStats['settingsUsage'], Record<string, str
     tileResize: {'1': 'малая', '2': 'широкая', '4': 'крупная'},
     notifications: {on: 'включены', off: 'выключены'},
     feedEnabled: {on: 'включена', off: 'выключена'},
-    language: {ru: 'русский'},
+    language: {ru: 'русский', en: 'английский', fr: 'французский', es: 'испанский', ar: 'арабский', zh: 'китайский'},
 };
 
 export const AdminStatsPanel = ({stats}: { stats: AdminStats }) => {
