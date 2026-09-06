@@ -4,11 +4,13 @@
 import {memo} from 'react'
 import {Icon} from '@/components/common/icons'
 import {LiveDot} from './live-dot.tsx'
+import {pairCategoryOf} from '@/lib/schedule-utils'
 import type {ScheduleEvent} from '@/shared/types'
 
 function PairCardBase({event, live}: { event: ScheduleEvent; live: boolean }) {
+    const category = pairCategoryOf(event.eventType)
     return (
-        <div className="pair-card">
+        <div className={`pair-card pair-card--${category}`}>
             <div className="pair-card__head">
                 <span className="pair-card__type">
                     <span className="pair-card__type-text">{event.eventType}</span>

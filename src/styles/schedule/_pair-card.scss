@@ -1,14 +1,28 @@
 .pair-list {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
 .pair-card {
-  border-bottom: 0.0625rem solid var(--c-divider);
-  padding: 1rem 0;
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  padding: 0.875rem 1rem;
 
-  &:last-child {
-    border-bottom: none;
+  &--lecture .pair-card__type {
+    color: var(--c-pair-lecture);
+  }
+
+  &--practice .pair-card__type {
+    color: var(--c-pair-practice);
+  }
+
+  &--lab .pair-card__type {
+    color: var(--c-pair-lab);
+  }
+
+  &--exam .pair-card__type {
+    color: var(--c-pair-exam);
   }
 
   &__head {

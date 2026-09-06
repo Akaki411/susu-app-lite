@@ -28,7 +28,7 @@ const zh: Record<I18nKey, string> = {
     'login.forgot': '忘记密码？',
     'login.unofficialNotice': '非官方应用，与学校无关',
     'login.sourceCode': '源代码',
-    'login.author': '作者',
+    'login.author': '反馈意见',
     'login.errorInvalid': '账号或密码错误',
     'login.errorNetwork': '服务器不可用，请稍后再试',
     'login.installApp': '安装应用',

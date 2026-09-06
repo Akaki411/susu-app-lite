@@ -28,7 +28,7 @@ const ar: Record<I18nKey, string> = {
     'login.forgot': 'هل نسيت كلمة المرور؟',
     'login.unofficialNotice': 'تطبيق غير رسمي وغير تابع للجامعة',
     'login.sourceCode': 'الشيفرة المصدرية',
-    'login.author': 'المطوّر',
+    'login.author': 'ردود الفعل',
     'login.errorInvalid': 'اسم المستخدم أو كلمة المرور غير صحيحة',
     'login.errorNetwork': 'الخادم غير متاح، حاول لاحقًا',
     'login.installApp': 'تثبيت التطبيق',

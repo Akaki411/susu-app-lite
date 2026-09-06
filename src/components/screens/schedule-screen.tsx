@@ -4,7 +4,7 @@
 // При загрузке загружает расписание из IndexedDB, затем в фоне запрашивает обновление
 
 
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {Icon, type IconName} from '@/components/common/icons'
 import {PageHeader} from '@/components/common/page-header.tsx'
 import {DayCarousel} from '@/components/schedule/day-carousel.tsx'
@@ -27,6 +27,7 @@ import {
     mondayOf,
     parseKey,
     sameDay,
+    smartInitialDate,
     toKey,
     weekParity,
 } from '@/lib/schedule-utils'
@@ -70,6 +71,17 @@ export default () => {
     useForceRefreshIfEmpty(scheduleCacheKey, data != null && data.events.length === 0, refreshing, refresh)
 
     const byDate = useMemo(() => groupByDate(data?.events ?? []), [data])
+
+    // Подбираем день по умолчанию (сегодня / ближайший день с парами) один раз на источник, как только данные загрузились
+    const autoPickedForRef = useRef<string | null>(null)
+    useEffect(() => {
+        if (!data) return
+        if (autoPickedForRef.current === scheduleCacheKey) return
+        autoPickedForRef.current = scheduleCacheKey
+        const smart = smartInitialDate(byDate, now)
+        setPivot(smart)
+        setWeekMonday(mondayOf(smart))
+    }, [data, scheduleCacheKey, byDate, now])
 
     const weeks = useMemo(() => {
         const set = new Set<string>()

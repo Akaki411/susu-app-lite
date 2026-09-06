@@ -28,7 +28,7 @@ const es: Record<I18nKey, string> = {
     'login.forgot': '¿Olvidó la contraseña?',
     'login.unofficialNotice': 'Aplicación no oficial, no afiliada a la universidad',
     'login.sourceCode': 'Código fuente',
-    'login.author': 'Autor',
+    'login.author': 'Realimentación',
     'login.errorInvalid': 'Usuario o contraseña incorrectos',
     'login.errorNetwork': 'Servidor no disponible, inténtelo más tarde',
     'login.installApp': 'Instalar la aplicación',

@@ -28,7 +28,7 @@ const en: Record<I18nKey, string> = {
     'login.forgot': 'Forgot password?',
     'login.unofficialNotice': 'Unofficial app, not affiliated with the university',
     'login.sourceCode': 'Source code',
-    'login.author': 'Author',
+    'login.author': 'Feedback tg',
     'login.errorInvalid': 'Invalid login or password',
     'login.errorNetwork': 'Server unavailable, please try again later',
     'login.installApp': 'Install app',

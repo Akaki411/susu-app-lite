@@ -73,3 +73,38 @@ export const isPairNow = (event: ScheduleEvent, dateKey: string, now: Date): boo
     const cur = now.getHours() * 60 + now.getMinutes()
     return cur >= timeToMin(event.beginTime) && cur < timeToMin(event.endTime)
 };
+
+export type PairCategory = 'lecture' | 'practice' | 'lab' | 'exam' | 'other'
+
+export const pairCategoryOf = (eventType: string): PairCategory => {
+    const t = eventType.toLowerCase()
+    if (t.includes('лекц')) return 'lecture'
+    if (t.includes('лаборатор')) return 'lab'
+    if (t.includes('экзамен') || t.includes('зачет') || t.includes('зачёт')) return 'exam'
+    if (t.includes('практ') || t.includes('семинар')) return 'practice'
+    return 'other'
+};
+
+const AUTO_SWITCH_GRACE_MIN = 60
+
+export const smartInitialDate = (byDate: Map<string, ScheduleEvent[]>, now: Date): Date => {
+    const todayKey = toKey(now)
+    const todayEvents = byDate.get(todayKey) ?? []
+    if (todayEvents.length > 0) {
+        const lastEnd = todayEvents.reduce((max, e) => Math.max(max, timeToMin(e.endTime)), 0)
+        const nowMin = now.getHours() * 60 + now.getMinutes()
+        if (nowMin < lastEnd + AUTO_SWITCH_GRACE_MIN) return now
+    }
+
+    let nextKey: string | null = null
+    for (const k of byDate.keys()) {
+        if (k > todayKey && (nextKey === null || k < nextKey)) nextKey = k
+    }
+    if (nextKey) return parseKey(nextKey)
+
+    let prevKey: string | null = null
+    for (const k of byDate.keys()) {
+        if (k <= todayKey && (prevKey === null || k > prevKey)) prevKey = k
+    }
+    return prevKey ? parseKey(prevKey) : now
+};

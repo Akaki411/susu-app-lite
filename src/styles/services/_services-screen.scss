@@ -46,10 +46,30 @@
   }
 
   &__username {
+    position: relative;
     margin: 0.4rem 0 0.4rem 0;
+    border: none;
+    background: none;
+    padding: 0;
+    font-family: inherit;
     font-size: 0.75rem;
     font-variant-numeric: tabular-nums;
     color: var(--c-text-3);
+  }
+
+  &__username-copied {
+    position: absolute;
+    top: -1.375rem;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    border-radius: 62.4375rem;
+    background: var(--c-accent);
+    padding: 0.1875rem 0.5625rem;
+    font-size: 0.65625rem;
+    font-weight: 600;
+    color: var(--c-on-accent);
+    animation: susu-fade-in 0.15s ease;
   }
 
   &__meta {
