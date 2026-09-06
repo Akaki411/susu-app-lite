@@ -23,6 +23,7 @@
   max-height: 82%;
   width: 100%;
   overflow-y: auto;
+  overscroll-behavior: contain;
   border-radius: 1.75rem 1.75rem 0 0;
   background: var(--c-surface);
   padding: 1rem 1.25rem 1.75rem;
@@ -36,6 +37,41 @@
 
   &--closing {
     animation: susu-sheet-out 200ms ease both;
+  }
+
+  &--settling {
+    transition:
+      transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      max-height 220ms ease,
+      border-radius 220ms ease;
+  }
+
+  &--expanded {
+    max-height: 100dvh;
+    border-radius: 0;
+
+    @include md {
+      max-height: 82%;
+      border-radius: 1.75rem;
+    }
+  }
+
+  &__drag-zone {
+    margin: -0.25rem -1.25rem 0;
+    padding: 0.25rem 1.25rem 0;
+  }
+
+  &__handle {
+    display: block;
+    width: 2.25rem;
+    height: 0.25rem;
+    margin: 0 auto 0.75rem;
+    border-radius: 62.4375rem;
+    background: var(--c-divider);
+
+    @include md {
+      display: none;
+    }
   }
 
   &__head {

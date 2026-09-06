@@ -64,6 +64,13 @@ const PATHS: Record<string, string[]> = {
     circleCheck: ['M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0', 'M9 12l2 2l4 -4'],
     chartBar: ['M3 3v18h18', 'M20 18v3', 'M16 16v5', 'M12 13v8', 'M8 16v5'],
     download: ['M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2', 'M7 11l5 5l5 -5', 'M12 4l0 12'],
+    world: [
+        'M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0',
+        'M3.6 9h16.8',
+        'M3.6 15h16.8',
+        'M11.5 3a17 17 0 0 0 0 18',
+        'M12.5 3a17 17 0 0 1 0 18',
+    ],
 }
 
 export type IconName = keyof typeof PATHS

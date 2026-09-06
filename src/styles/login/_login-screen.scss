@@ -30,12 +30,32 @@
   }
 
   &__hero {
+    position: relative;
     display: flex;
     height: 16rem;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
     background: linear-gradient(160deg, var(--c-accent-2), var(--c-accent));
+  }
+
+  &__lang-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.25rem;
+    width: 2.25rem;
+    border-radius: 62.4375rem;
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+  }
+
+  &__lang-icon {
+    height: 1.125rem;
+    width: 1.125rem;
   }
 
   &__logo {

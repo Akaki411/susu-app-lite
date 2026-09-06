@@ -2,7 +2,8 @@
 // Всплывающее окно-читалка статьи, апстрим новостей не отдаёт тело статьи -
 // полный текст парсится отдельно на бэкенде (см. src/backend/article.ts) и приходит готовым HTML
 
-import {useEffect, useState} from 'react'
+import {useEffect, useState, type MouseEvent} from 'react'
+import {ImageViewer} from '@/components/common/image-viewer.tsx'
 import {Sheet} from '@/components/common/sheet.tsx'
 import {Icon} from '@/components/common/icons'
 import {useI18n} from '@/i18n'
@@ -13,6 +14,7 @@ export const ArticleSheet = ({item, onClose}: { item: NewsItem | null; onClose: 
     const {t} = useI18n()
     const [article, setArticle] = useState<NewsArticle | null>(null)
     const [failed, setFailed] = useState(false)
+    const [viewerImage, setViewerImage] = useState<{ src: string; alt: string } | null>(null)
 
     useEffect(() => {
         if (!item) return
@@ -37,28 +39,54 @@ export const ArticleSheet = ({item, onClose}: { item: NewsItem | null; onClose: 
         else void navigator.clipboard?.writeText(item.link)
     }
 
+    const onContentClick = (e: MouseEvent<HTMLDivElement>) => {
+        if (e.target instanceof HTMLImageElement) {
+            setViewerImage({src: e.target.src, alt: e.target.alt})
+        }
+    }
+
     return (
-        <Sheet open={item != null} onClose={onClose} title={t('feed.readerTitle')} swipeUpToClose>
-            {!item ? null : failed ? (
-                <div className="empty-state">{t('feed.articleError')}</div>
-            ) : !article ? (
-                <div className="empty-state empty-state--compact">{t('common.loading')}</div>
-            ) : (
-                <div className="article-reader">
-                    {article.image && <img src={article.image} alt="" className="article-reader__image"/>}
-                    <h1 className="article-reader__title">{article.title}</h1>
-                    <div className="article-reader__meta">
-                        <span>
-                            {new Date(item.date).toLocaleDateString('ru-RU', {day: 'numeric', month: 'long', year: 'numeric'})}
-                        </span>
-                        <button type="button" onClick={share} className="article-reader__share">
-                            <Icon name="share" className="article-reader__share-icon"/>
-                            {t('feed.share')}
-                        </button>
+        <>
+            <Sheet open={item != null} onClose={onClose} title={t('feed.readerTitle')}>
+                {!item ? null : failed ? (
+                    <div className="empty-state">{t('feed.articleError')}</div>
+                ) : !article ? (
+                    <div className="empty-state empty-state--compact">{t('common.loading')}</div>
+                ) : (
+                    <div className="article-reader">
+                        {article.image && (
+                            <button
+                                type="button"
+                                className="article-reader__image-btn"
+                                aria-label={t('feed.viewImage')}
+                                onClick={() => setViewerImage({src: article.image!, alt: article.title})}
+                            >
+                                <img src={article.image} alt="" className="article-reader__image"/>
+                            </button>
+                        )}
+                        <h1 className="article-reader__title">{article.title}</h1>
+                        <div className="article-reader__meta">
+                            <span>
+                                {new Date(item.date).toLocaleDateString('ru-RU', {day: 'numeric', month: 'long', year: 'numeric'})}
+                            </span>
+                            <button type="button" onClick={share} className="article-reader__share">
+                                <Icon name="share" className="article-reader__share-icon"/>
+                                {t('feed.share')}
+                            </button>
+                        </div>
+                        <div
+                            className="article-reader__content"
+                            onClick={onContentClick}
+                            dangerouslySetInnerHTML={{__html: article.contentHtml}}
+                        />
                     </div>
-                    <div className="article-reader__content" dangerouslySetInnerHTML={{__html: article.contentHtml}}/>
-                </div>
-            )}
-        </Sheet>
+                )}
+            </Sheet>
+            <ImageViewer
+                src={viewerImage?.src ?? null}
+                alt={viewerImage?.alt ?? ''}
+                onClose={() => setViewerImage(null)}
+            />
+        </>
     )
 }

@@ -38,6 +38,7 @@ const ru = {
     'feed.readerTitle': 'Новость',
     'feed.articleError': 'Не удалось загрузить статью',
     'feed.share': 'Поделиться',
+    'feed.viewImage': 'Просмотреть изображение',
 
     'schedule.title': 'Расписание',
     'schedule.pickDate': 'Выбрать дату',
@@ -147,6 +148,9 @@ const ru = {
     'settings.tilesConfigure': 'Настроить плитки',
     'settings.tilesHint': 'Размер плитки — сколько клеток занимает: 1, 2 (широкая) или 4 (крупная)',
     'settings.tilesAllHidden': 'Все плитки скрыты — включите нужные в настройках',
+    'settings.language': 'Язык',
+    'settings.selectLanguage': 'Выбор языка',
+    'settings.languageOnlyRu': 'Пока доступен только русский язык',
 
     'pass.title': 'Электронный пропуск',
     'pass.hint': 'Поднесите экран к сканеру на турникете или считывателю в аудитории',

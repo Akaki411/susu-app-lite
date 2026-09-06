@@ -4,6 +4,8 @@
 // Успешный вход сохраняет токены и профиль в localStorage и уводит на расписание
 
 import {useState} from 'react'
+import {LanguageSheet} from '@/components/common/language-sheet.tsx'
+import {Icon} from '@/components/common/icons'
 import {InstallPwaButton} from '@/components/login/install-pwa-button.tsx'
 import {useI18n} from '@/i18n'
 import {login} from '@/lib/api-client'
@@ -16,6 +18,7 @@ export default () => {
     const [password, setPassword] = useState('')
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [langOpen, setLangOpen] = useState(false)
 
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault()
@@ -37,6 +40,14 @@ export default () => {
         <div className="login">
             <div className="login__panel">
                 <div className="login__hero">
+                    <button
+                        type="button"
+                        onClick={() => setLangOpen(true)}
+                        aria-label={t('settings.language')}
+                        className="login__lang-btn"
+                    >
+                        <Icon name="world" className="login__lang-icon"/>
+                    </button>
                     <img src="/logo.webp" alt="ЮУрГУ" className="login__logo"/>
                 </div>
 
@@ -79,6 +90,7 @@ export default () => {
                     <p className="login__copyright">{t('login.copyright')}</p>
                 </form>
             </div>
+            <LanguageSheet open={langOpen} onClose={() => setLangOpen(false)}/>
         </div>
     )
 }

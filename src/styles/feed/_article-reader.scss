@@ -1,6 +1,13 @@
 .article-reader {
-  &__image {
+  &__image-btn {
+    display: block;
+    width: 100%;
     margin-bottom: 1rem;
+    cursor: zoom-in;
+  }
+
+  &__image {
+    display: block;
     height: 10rem;
     width: 100%;
     border-radius: var(--radius-md);
@@ -80,6 +87,7 @@
       width: 100%;
       border-radius: 0.75rem;
       object-fit: cover;
+      cursor: zoom-in;
     }
   }
 }

@@ -6,6 +6,15 @@ import type {TileSize} from '@/services/types'
 
 export type PassButtonMode = 'fab' | 'navbar'
 
+export type LanguageCode = 'ru'
+
+export interface LanguageOption {
+    code: LanguageCode
+    label: string
+}
+
+export const LANGUAGES: LanguageOption[] = [{code: 'ru', label: 'Русский'}]
+
 export interface TileConfig {
     size: TileSize
     enabled: boolean
@@ -15,6 +24,7 @@ export interface Settings {
     feedEnabled: boolean
     passButtonMode: PassButtonMode
     notifications: boolean
+    language: LanguageCode
     tiles: Record<string, TileConfig>
 }
 
@@ -22,6 +32,7 @@ const DEFAULTS: Settings = {
     feedEnabled: true,
     passButtonMode: 'fab',
     notifications: true,
+    language: 'ru',
     tiles: {},
 }
 
