@@ -128,7 +128,75 @@ const patchGetClientComponentPathGuard = () => {
     }
 };
 
+const UTF8_BYTE_LENGTH_FN = `function __rariUtf8ByteLength(str){let len=0;for(let i=0;i<str.length;i++){const code=str.charCodeAt(i);if(code<0x80)len+=1;else if(code<0x800)len+=2;else if(code>=0xD800&&code<=0xDBFF){len+=4;i++;}else len+=3;}return len;}\n`
+
+const patchRedisEncoderBufferByteLength = () => {
+    let file
+    try {
+        file = join(require.resolve('@redis/client/package.json'), '..', 'dist/lib/RESP/encoder.js')
+    } catch {
+        console.warn('[patch] @redis/client не найден — пропускаем')
+        return
+    }
+    const src = readFileSync(file, 'utf-8')
+    const MARKER = '__rariUtf8ByteLength'
+    if (src.includes(MARKER)) {
+        console.warn('[patch] @redis/client: уже пропатчен')
+        return
+    }
+    const CALL_OLD = "'$' + Buffer.byteLength(arg) + CRLF + arg + CRLF;"
+    const CALL_NEW = "'$' + __rariUtf8ByteLength(arg) + CRLF + arg + CRLF;"
+    const CONST_OLD = "const CRLF = '\\r\\n';"
+    if (!src.includes(CALL_OLD) || !src.includes(CONST_OLD)) {
+        console.warn('[patch] @redis/client: исходная строка не найдена (версия изменилась?)')
+        return
+    }
+
+    const withHelper = src.replace(CONST_OLD, () => CONST_OLD + '\n' + UTF8_BYTE_LENGTH_FN)
+    const patched = withHelper.replace(CALL_OLD, () => CALL_NEW)
+    writeFileSync(file, patched, 'utf-8')
+    console.warn(`[patch] @redis/client: Buffer.byteLength → чистый JS UTF-8 counter (${file})`)
+};
+
+const patchRedisScheduleWriteSetImmediate = () => {
+    let file
+    try {
+        file = join(require.resolve('@redis/client/package.json'), '..', 'dist/lib/client/index.js')
+    } catch {
+        console.warn('[patch] @redis/client (client/index.js) не найден — пропускаем')
+        return
+    }
+    const src = readFileSync(file, 'utf-8')
+    const MARKER = '__rariScheduledWriteCb'
+    if (src.includes(MARKER)) {
+        console.warn('[patch] @redis/client: setImmediate уже пропатчен')
+        return
+    }
+    const OLD = `this.#scheduledWrite = setImmediate(() => {
+            this.#write();
+            this.#scheduledWrite = undefined;
+        });`
+    const NEW = `const ${MARKER} = () => {
+            this.#write();
+            this.#scheduledWrite = undefined;
+        };
+        try {
+            this.#scheduledWrite = setImmediate(${MARKER});
+        }
+        catch {
+            this.#scheduledWrite = setTimeout(${MARKER}, 0);
+        }`
+    if (!src.includes(OLD)) {
+        console.warn('[patch] @redis/client: исходная строка #scheduleWrite не найдена (версия изменилась?)')
+        return
+    }
+    writeFileSync(file, src.replace(OLD, () => NEW), 'utf-8')
+    console.warn(`[patch] @redis/client: #scheduleWrite setImmediate → try/catch с setTimeout fallback (${file})`)
+};
+
 restoreReactCompilerRuntime()
 patchRariFiles()
 patchReactVirtualFlushSync()
 patchGetClientComponentPathGuard()
+patchRedisEncoderBufferByteLength()
+patchRedisScheduleWriteSetImmediate()
