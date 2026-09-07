@@ -28,7 +28,7 @@
   background: var(--c-surface);
   padding: 1rem 1.25rem 1.75rem;
   box-shadow: var(--shadow-3);
-  animation: susu-sheet-in 240ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: susu-sheet-in 200ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
 
   @include md {
     width: 26.25rem;
@@ -41,9 +41,9 @@
 
   &--settling {
     transition:
-      transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
-      max-height 220ms ease,
-      border-radius 220ms ease;
+      transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      max-height 200ms ease,
+      border-radius 200ms ease;
   }
 
   &--expanded {
@@ -59,6 +59,7 @@
   &__drag-zone {
     margin: -0.25rem -1.25rem 0;
     padding: 0.25rem 1.25rem 0;
+    touch-action: none;
   }
 
   &__handle {
@@ -84,7 +85,7 @@
   &__title {
     margin: 0;
     font-size: 1.03125rem;
-    font-weight: 700;
+    font-weight: 600;
   }
 
   &__close {

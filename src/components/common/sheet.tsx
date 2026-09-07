@@ -1,12 +1,12 @@
 'use client'
 // Модальная шторка через портал в корень страницы
 
-import {useEffect, useRef, useState, type CSSProperties, type ReactNode, type TouchEvent} from 'react'
+import {useEffect, useRef, useState, type CSSProperties, type ReactNode} from 'react'
 import {createPortal} from 'react-dom'
 import {Icon} from './icons'
 
-const CLOSE_DURATION = 220
-const DRAG_CLOSE_PX = 100
+const CLOSE_DURATION = 200
+const DRAG_CLOSE_PX = 90
 const DRAG_EXPAND_PX = 60
 const EXPAND_LIFT_MAX = 90
 
@@ -30,8 +30,8 @@ export const Sheet = ({
     const [settling, setSettling] = useState(false)
     const sheetRef = useRef<HTMLDivElement | null>(null)
     const dragZoneRef = useRef<HTMLDivElement | null>(null)
-    const touchState = useRef<{ y: number; atTop: boolean; fromHandle: boolean } | null>(null)
     const dismissing = useRef(false)
+    const dragRef = useRef(0)
 
     useEffect(() => {
         if (open) {
@@ -39,6 +39,7 @@ export const Sheet = ({
             setClosing(false)
             setExpanded(false)
             setDragY(0)
+            dragRef.current = 0
             dismissing.current = false
             return
         }
@@ -60,55 +61,81 @@ export const Sheet = ({
         }
     }, [mounted])
 
-    if (!mounted || typeof document === 'undefined') return null
+    useEffect(() => {
+        if (!mounted || !draggable) return
+        const zone = dragZoneRef.current
+        const sheet = sheetRef.current
+        if (!zone || !sheet) return
 
-    const onTouchStart = (e: TouchEvent<HTMLDivElement>) => {
-        if (!draggable || dismissing.current) return
-        const t = e.touches[0]
-        const el = sheetRef.current
-        const handle = dragZoneRef.current
-        if (!t || !el) return
-        const fromHandle = !!(handle && e.target instanceof Node && handle.contains(e.target))
-        touchState.current = {y: t.clientY, atTop: fromHandle || el.scrollTop <= 0, fromHandle}
-        setSettling(false)
-    };
+        let startY: number | null = null
 
-    const onTouchMove = (e: TouchEvent<HTMLDivElement>) => {
-        const s = touchState.current
-        const t = e.touches[0]
-        if (!draggable || !s || !t) return
-        const dy = t.clientY - s.y
-        if (dy > 0) {
-            if (!s.atTop) return
-            setDragY(dy)
-        } else if (s.fromHandle && !expanded) {
-            setDragY(Math.max(dy, -EXPAND_LIFT_MAX))
+        const onMove = (e: PointerEvent) => {
+            if (startY == null) return
+            const dy = e.clientY - startY
+            if (dy > 0) {
+                dragRef.current = dy
+                setDragY(dy)
+            } else if (!expanded) {
+                dragRef.current = Math.max(dy, -EXPAND_LIFT_MAX)
+                setDragY(dragRef.current)
+            } else {
+                dragRef.current = 0
+                setDragY(0)
+            }
         }
-    };
 
-    const onTouchEnd = () => {
-        const s = touchState.current
-        touchState.current = null
-        if (!draggable || !s) return
+        const onUp = () => {
+            window.removeEventListener('pointermove', onMove)
+            window.removeEventListener('pointerup', onUp)
+            window.removeEventListener('pointercancel', onUp)
+            if (startY == null) return
+            startY = null
+            const drag = dragRef.current
 
-        if (dragY > DRAG_CLOSE_PX) {
-            dismissing.current = true
+            if (drag > DRAG_CLOSE_PX) {
+                dismissing.current = true
+                setSettling(true)
+                const flee = (sheet.getBoundingClientRect().height || 800) + 120
+                dragRef.current = flee
+                setDragY(flee)
+                return
+            }
+
             setSettling(true)
-            const flee = (sheetRef.current?.getBoundingClientRect().height ?? 800) + 120
-            setDragY(flee)
-            return
+            if (drag < -DRAG_EXPAND_PX) setExpanded(true)
+            dragRef.current = 0
+            setDragY(0)
         }
 
-        setSettling(true)
-        if (dragY < -DRAG_EXPAND_PX) setExpanded(true)
-        setDragY(0)
-    };
+        const onDown = (e: PointerEvent) => {
+            if (dismissing.current) return
+            const target = e.target as Element | null
+            if (target?.closest?.('.sheet__close')) return // не мешаем кнопке закрытия
+            startY = e.clientY
+            dragRef.current = 0
+            setSettling(false)
+            window.addEventListener('pointermove', onMove)
+            window.addEventListener('pointerup', onUp)
+            window.addEventListener('pointercancel', onUp)
+        }
+
+        zone.addEventListener('pointerdown', onDown)
+        return () => {
+            zone.removeEventListener('pointerdown', onDown)
+            window.removeEventListener('pointermove', onMove)
+            window.removeEventListener('pointerup', onUp)
+            window.removeEventListener('pointercancel', onUp)
+        }
+    }, [mounted, draggable, expanded])
+
+    if (!mounted || typeof document === 'undefined') return null
 
     const onSheetTransitionEnd = () => {
         setSettling(false)
         if (dismissing.current) {
             dismissing.current = false
             setMounted(false)
+            dragRef.current = 0
             setDragY(0)
             setExpanded(false)
             onClose()
@@ -132,9 +159,6 @@ export const Sheet = ({
                 aria-modal="true"
                 style={style}
                 onTransitionEnd={onSheetTransitionEnd}
-                onTouchStart={onTouchStart}
-                onTouchMove={onTouchMove}
-                onTouchEnd={onTouchEnd}
             >
                 <div ref={dragZoneRef} className="sheet__drag-zone">
                     {draggable && <span className="sheet__handle" aria-hidden="true"/>}

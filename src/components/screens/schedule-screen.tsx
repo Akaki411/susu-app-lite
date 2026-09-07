@@ -8,6 +8,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {Icon, type IconName} from '@/components/common/icons'
 import {PageHeader} from '@/components/common/page-header.tsx'
 import {DayCarousel} from '@/components/schedule/day-carousel.tsx'
+import {WeekCarousel} from '@/components/schedule/week-carousel.tsx'
 import {DayBlock} from '@/components/schedule/day-block.tsx'
 import {WeekStrip} from '@/components/schedule/week-strip.tsx'
 import {CalendarSheet} from '@/components/schedule/calendar-sheet.tsx'
@@ -21,6 +22,7 @@ import {
     setViewedScheduleSource,
     type ScheduleSource,
 } from '@/lib/schedule-source'
+import {useSettings} from '@/lib/settings'
 import {readRaw, writeRaw} from '@/lib/token-store'
 import {useForceRefreshIfEmpty, useOfflineData} from '@/lib/swr'
 import {useSwipe} from '@/lib/use-swipe'
@@ -51,6 +53,7 @@ const NavArrow = ({icon, label, onClick}: {icon: IconName; label: string; onClic
 
 export default () => {
     const {t} = useI18n()
+    const {settings} = useSettings()
     const now = useNow()
     const [source, setSource] = useState<ScheduleSource | null>(() => getScheduleSource())
     const ownSource = useMemo(() => getOwnScheduleSource(), [])
@@ -65,6 +68,9 @@ export default () => {
     const [settingsOpen, setSettingsOpen] = useState(false)
     const [calendarOpen, setCalendarOpen] = useState(false)
     const [slide, setSlide] = useState<{ dir: 'left' | 'right'; step: number } | null>(null)
+    const [weekSlide, setWeekSlide] = useState<{ dir: 'left' | 'right' } | null>(null)
+    const [manualRefreshing, setManualRefreshing] = useState(false)
+    const weeksScrollRef = useRef<HTMLDivElement | null>(null)
 
     const scheduleCacheKey = source ? `${source.kind}:${source.id}` : 'none'
 
@@ -79,7 +85,6 @@ export default () => {
 
     const byDate = useMemo(() => groupByDate(data?.events ?? []), [data])
 
-    // Подбираем день по умолчанию (сегодня / ближайший день с парами) один раз на источник, как только данные загрузились
     const autoPickedForRef = useRef<string | null>(null)
     useEffect(() => {
         if (!data) return
@@ -127,18 +132,38 @@ export default () => {
         return best ? parseKey(best) : null
     };
 
+    const selWeekMonday = weeks.find((w) => sameDay(w, weekMonday)) ?? weeks[0]!
+    const selIndex = Math.max(0, weeks.findIndex((w) => sameDay(w, selWeekMonday)))
+
+    const goWeek = (delta: 1 | -1) => {
+        const target = selIndex + delta
+        if (target < 0 || target >= weeks.length) return
+        setWeekSlide((s) => s ?? {dir: delta > 0 ? 'left' : 'right'})
+    };
+
+    const onWeekSlideSettled = () => {
+        if (weekSlide) {
+            const target = weeks[selIndex + (weekSlide.dir === 'left' ? 1 : -1)]
+            if (target) setWeekMonday(target)
+        }
+        setWeekSlide(null)
+    };
+
     const {handlers, pullDistance} = useSwipe({
         onSwipeLeft: () => {
-            if (mode !== 'dates') return shiftWeek(1)
+            if (mode !== 'dates') return goWeek(1)
             const next = findNextDateWithPairs(pivot)
             if (next) setSlide((s) => s ?? {dir: 'left', step: daysBetween(pivot, next)})
         },
         onSwipeRight: () => {
-            if (mode !== 'dates') return shiftWeek(-1)
+            if (mode !== 'dates') return goWeek(-1)
             const prev = findPrevDateWithPairs(pivot)
             if (prev) setSlide((s) => s ?? {dir: 'right', step: daysBetween(prev, pivot)})
         },
-        onPullRefresh: () => void refresh(true),
+        onPullRefresh: () => {
+            setManualRefreshing(true)
+            void refresh(true).finally(() => setManualRefreshing(false))
+        },
     })
 
     const onSlideSettled = () => {
@@ -150,11 +175,14 @@ export default () => {
     const goPrevWeekInDates = () => setSlide((s) => s ?? {dir: 'right', step: 7});
     const onStripWeekShift = (dir: 1 | -1) => setPivot((d) => addDays(d, dir * 7));
 
-    const shiftWeek = (dir: number) => {
-        setWeekMonday((m) => addDays(m, dir * 7))
-    };
-
-    const selWeekMonday = weeks.find((w) => sameDay(w, weekMonday)) ?? weeks[0]
+    const selKey = selWeekMonday ? toKey(selWeekMonday) : ''
+    useEffect(() => {
+        if (mode !== 'weeks' || settings.hideScheduleSwitcher) return
+        const el = weeksScrollRef.current
+        if (!el) return
+        const active = el.querySelector<HTMLElement>('.schedule__week-card--active')
+        if (active) el.scrollTo({left: active.offsetLeft - (el.clientWidth - active.clientWidth) / 2, behavior: 'smooth'})
+    }, [selKey, mode, settings.hideScheduleSwitcher, weeks])
 
     const subtitle = source
         ? mode === 'dates'
@@ -178,44 +206,39 @@ export default () => {
         </div>
     );
 
-    const renderWeekStrip = () => {
-        const selMonday = selWeekMonday ?? weeks[0]!
-
-        return (
-            <div className="schedule__weeks">
-                <NavArrow icon="chevronLeft" label={t('schedule.prevWeek')} onClick={() => shiftWeek(-1)}/>
-                <div className="schedule__weeks-scroll">
-                    {weeks.map((w) => {
-                        const active = sameDay(w, selMonday)
-                        const isCurrent = sameDay(w, mondayOf(now))
-                        return (
-                            <button
-                                key={toKey(w)}
-                                type="button"
-                                onClick={() => setWeekMonday(w)}
-                                className={`schedule__week-card${active ? ' schedule__week-card--active' : ''}`}
-                            >
-                                <span className={`schedule__week-title${active ? ' schedule__week-title--active' : ''}`}>
-                                    {weekParity(w)} неделя
-                                    {isCurrent && (
-                                        <i className={`schedule__week-current-dot${active ? ' schedule__week-current-dot--active' : ''}`}/>
-                                    )}
-                                </span>
-                                <span className={`schedule__week-range${active ? ' schedule__week-range--active' : ''}`}>
-                                    {fmtShort(w)} – {fmtShort(addDays(w, 6))}
-                                </span>
-                            </button>
-                        )
-                    })}
-                </div>
-                <NavArrow icon="chevronRight" label={t('schedule.nextWeek')} onClick={() => shiftWeek(1)}/>
+    const renderWeekStrip = () => (
+        <div className="schedule__weeks">
+            <NavArrow icon="chevronLeft" label={t('schedule.prevWeek')} onClick={() => goWeek(-1)}/>
+            <div ref={weeksScrollRef} className="schedule__weeks-scroll">
+                {weeks.map((w) => {
+                    const active = sameDay(w, selWeekMonday)
+                    const isCurrent = sameDay(w, mondayOf(now))
+                    return (
+                        <button
+                            key={toKey(w)}
+                            type="button"
+                            onClick={() => setWeekMonday(w)}
+                            className={`schedule__week-card${active ? ' schedule__week-card--active' : ''}`}
+                        >
+                            <span className={`schedule__week-title${active ? ' schedule__week-title--active' : ''}`}>
+                                {weekParity(w)} неделя
+                                {isCurrent && (
+                                    <i className={`schedule__week-current-dot${active ? ' schedule__week-current-dot--active' : ''}`}/>
+                                )}
+                            </span>
+                            <span className={`schedule__week-range${active ? ' schedule__week-range--active' : ''}`}>
+                                {fmtShort(w)} – {fmtShort(addDays(w, 6))}
+                            </span>
+                        </button>
+                    )
+                })}
             </div>
-        )
-    };
+            <NavArrow icon="chevronRight" label={t('schedule.nextWeek')} onClick={() => goWeek(1)}/>
+        </div>
+    );
 
-    const renderWeekDays = () => {
-        const selMonday = selWeekMonday ?? weeks[0]!
-        const days = Array.from({length: 6}, (_, i) => addDays(selMonday, i)).filter((d) => (byDate.get(toKey(d)) ?? []).length > 0)
+    const renderWeekDaysFor = (monday: Date) => {
+        const days = Array.from({length: 6}, (_, i) => addDays(monday, i)).filter((d) => (byDate.get(toKey(d)) ?? []).length > 0)
 
         return days.length > 0 ? (
             days.map((d) => {
@@ -248,13 +271,15 @@ export default () => {
                         {icon: 'settings', label: t('schedule.settings'), onClick: () => setSettingsOpen(true)},
                     ]}
                 />
-                <div className="schedule__body">{mode === 'dates' ? renderDateStrip() : renderWeekStrip()}</div>
+                {!settings.hideScheduleSwitcher && (
+                    <div className="schedule__body">{mode === 'dates' ? renderDateStrip() : renderWeekStrip()}</div>
+                )}
             </div>
 
             <div className="schedule__content" {...handlers}>
-                {(pullDistance > 0 || refreshing) && (
-                    <div className="pull-refresh" style={{height: Math.max(pullDistance, refreshing ? 28 : 0)}}>
-                        {refreshing ? <span className="spinner"/> : t('schedule.pullToRefresh')}
+                {(pullDistance > 0 || manualRefreshing) && (
+                    <div className="pull-refresh" style={{height: Math.max(pullDistance, manualRefreshing ? 28 : 0)}}>
+                        {manualRefreshing ? <span className="spinner"/> : t('schedule.pullToRefresh')}
                     </div>
                 )}
 
@@ -269,7 +294,13 @@ export default () => {
                         onSettled={onSlideSettled}
                     />
                 ) : (
-                    <div className="schedule__body">{renderWeekDays()}</div>
+                    <WeekCarousel
+                        weeks={weeks}
+                        index={selIndex}
+                        dir={weekSlide?.dir ?? null}
+                        onSettled={onWeekSlideSettled}
+                        renderWeek={renderWeekDaysFor}
+                    />
                 )}
             </div>
 

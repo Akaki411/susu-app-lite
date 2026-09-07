@@ -46,6 +46,12 @@ export const getScheduleSource = (): ScheduleSource | null => readJson<ScheduleS
 
 export const getRecentScheduleSources = (): ScheduleSource[] => readJson<ScheduleSource[]>(local(), RECENT_KEY) ?? [];
 
+export const removeRecentScheduleSource = (source: ScheduleSource): ScheduleSource[] => {
+    const list = getRecentScheduleSources().filter((s) => !sameSource(s, source))
+    writeJson(local(), RECENT_KEY, list)
+    return list
+};
+
 const pushRecent = (source: ScheduleSource): void => {
     const list = getRecentScheduleSources().filter((s) => !sameSource(s, source))
     list.unshift(source)

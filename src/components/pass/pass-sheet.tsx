@@ -22,7 +22,7 @@ export const PassSheet = () => {
     const src = qrUrl()
 
     return (
-        <Sheet open={open} onClose={() => setOpen(false)} title={t('pass.title')} draggable={false}>
+        <Sheet open={open} onClose={() => setOpen(false)} title={t('pass.title')}>
             {src && profile ? (
                 <div className="pass-card">
                     <div className="pass-card__qr-wrap">

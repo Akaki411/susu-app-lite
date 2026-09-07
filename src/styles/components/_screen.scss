@@ -1,10 +1,15 @@
 .screen {
+  display: flex;
   min-height: 100vh;
+  flex-direction: column;
+  gap: 0.5rem;
 
   &__header {
     position: sticky;
     top: 0;
     z-index: 20;
-    background: var(--c-bg);
+    background: var(--nav-glass);
+    -webkit-backdrop-filter: blur(0.75rem);
+    backdrop-filter: blur(0.75rem);
   }
 }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"/>
-    <meta name="theme-color" content="#264795"/>
+    <meta id="theme-color-meta" name="theme-color" content="#e7e8ec"/>
     <meta name="description" content="Расписание, рейтинг БРС, электронный пропуск и сервисы ЮУрГУ"/>
 
     <link rel="manifest" href="/manifest.webmanifest"/>
@@ -17,9 +17,23 @@
 
     <script>
         (() => {
+            const THEME_BG = {light: '#e7e8ec', dark: '#131318'}
+            let stored = 'system'
             try {
                 const t = localStorage.getItem('susu_theme')
-                if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t)
+                if (t === 'dark' || t === 'light') {
+                    stored = t
+                    document.documentElement.setAttribute('data-theme', t)
+                }
+            } catch (e) {}
+            try {
+                const isDark =
+                    stored === 'dark' ||
+                    (stored === 'system' &&
+                        window.matchMedia &&
+                        window.matchMedia('(prefers-color-scheme: dark)').matches)
+                const meta = document.getElementById('theme-color-meta')
+                if (meta) meta.setAttribute('content', isDark ? THEME_BG.dark : THEME_BG.light)
             } catch (e) {}
             try {
                 const lang = JSON.parse(localStorage.getItem('susu_settings') || '{}').language

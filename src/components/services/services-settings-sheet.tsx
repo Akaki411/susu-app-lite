@@ -3,43 +3,12 @@
 import {useState} from 'react'
 import {LanguageSheet} from '@/components/common/language-sheet.tsx'
 import {Sheet} from '@/components/common/sheet.tsx'
+import {SwitchRow} from '@/components/common/switch-row.tsx'
 import {Icon} from '@/components/common/icons'
 import {useI18n} from '@/i18n'
 import {LANGUAGES, useSettings, type PassButtonMode} from '@/lib/settings'
 import {useTheme} from '@/lib/theme'
 import {SERVICE_META} from '@/services/registry'
-
-const SwitchRow = ({
-    icon,
-    label,
-    hint,
-    on,
-    onToggle
-}: {
-    icon: Parameters<typeof Icon>[0]['name']
-    label: string
-    hint: string
-    on: boolean
-    onToggle: () => void
-}) => (
-    <div className="settings-switch">
-        <span className="settings-switch__icon">
-            <Icon name={icon} className="settings-switch__icon-svg"/>
-        </span>
-        <span className="settings-switch__body">
-            <span className="settings-switch__label">{label}</span>
-            <span className="settings-switch__hint">{hint}</span>
-        </span>
-        <button
-            type="button"
-            onClick={onToggle}
-            aria-pressed={on}
-            className={`settings-switch__toggle${on ? ' settings-switch__toggle--on' : ''}`}
-        >
-            <span className="settings-switch__toggle-knob"/>
-        </button>
-    </div>
-)
 
 export const ServicesSettingsSheet = ({
     open,

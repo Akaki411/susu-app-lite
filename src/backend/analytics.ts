@@ -19,8 +19,14 @@ const HLL_IDS = [
 ] as const
 export type HllId = (typeof HLL_IDS)[number]
 
-const hlls = new Map<HllId, HyperLogLog>()
-const dirtyHlls = new Set<HllId>()
+type AnalyticsGlobals = typeof globalThis & {
+    __susuHlls?: Map<HllId, HyperLogLog>
+    __susuDirtyHlls?: Set<HllId>
+    __susuCounterDeltas?: Map<string, number>
+}
+const g = globalThis as AnalyticsGlobals
+const hlls = (g.__susuHlls ??= new Map<HllId, HyperLogLog>())
+const dirtyHlls = (g.__susuDirtyHlls ??= new Set<HllId>())
 
 const loadHll = (id: HllId): HyperLogLog => {
     let h = hlls.get(id)
@@ -39,7 +45,7 @@ export const addToHll = (id: HllId, value: string): void => {
 
 export const countHll = (id: HllId): number => loadHll(id).count()
 
-const counterDeltas = new Map<string, number>()
+const counterDeltas = (g.__susuCounterDeltas ??= new Map<string, number>())
 
 export const incrementCounter = (category: string, key: string): void => {
     const k = `${category}:${key}`

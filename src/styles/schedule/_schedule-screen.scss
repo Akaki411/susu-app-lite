@@ -2,6 +2,7 @@
 
 .schedule {
   &__content {
+    flex: 1 1 auto;
     min-height: 40vh;
   }
 
@@ -64,13 +65,13 @@
 
   &__day-num {
     font-size: 0.9375rem;
-    font-weight: 700;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
     color: var(--c-text);
 
     &--active {
       color: var(--c-accent);
-      font-weight: 800;
+      font-weight: 700;
     }
   }
 
@@ -118,7 +119,7 @@
     gap: 0.375rem;
     white-space: nowrap;
     font-size: 0.78125rem;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--c-text);
 
     &--active {

@@ -8,6 +8,8 @@
   border-radius: var(--radius-md);
   background: var(--c-surface);
   padding: 0.875rem 1rem;
+  -webkit-user-select: text;
+  user-select: text;
 
   &--lecture .pair-card__type {
     color: var(--c-pair-lecture);
@@ -40,7 +42,7 @@
     min-width: 0;
     align-items: center;
     font-size: 0.78125rem;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--c-accent);
   }
 
@@ -60,7 +62,7 @@
   &__subject {
     margin-bottom: 0.375rem;
     font-size: 0.9375rem;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.3;
   }
 

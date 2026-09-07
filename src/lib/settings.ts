@@ -36,6 +36,7 @@ export interface Settings {
     passButtonMode: PassButtonMode
     notifications: boolean
     language: LanguageCode
+    hideScheduleSwitcher: boolean
     tiles: Record<string, TileConfig>
 }
 
@@ -44,6 +45,7 @@ const DEFAULTS: Settings = {
     passButtonMode: 'fab',
     notifications: true,
     language: 'ru',
+    hideScheduleSwitcher: false,
     tiles: {},
 }
 

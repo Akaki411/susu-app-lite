@@ -15,8 +15,8 @@ const MONTHS_FULL = [
 ]
 
 const DRAG_MOVE_THRESHOLD = 8
-const DRAG_COMMIT_PX = 60
-const DRAG_COMMIT_RATIO = 0.2
+const DRAG_COMMIT_PX = 32
+const DRAG_COMMIT_RATIO = 0.1
 
 const addMonths = (d: Date, n: number): Date => new Date(d.getFullYear(), d.getMonth() + n, 1);
 

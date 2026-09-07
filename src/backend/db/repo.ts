@@ -14,7 +14,13 @@ interface DailyStatRow {
     byEndpoint: string
 }
 
-const buffer = new Map<string, { requests: number; byEndpoint: Record<string, number> }>()
+type StatsGlobals = typeof globalThis & {
+    __susuStatsBuffer?: Map<string, { requests: number; byEndpoint: Record<string, number> }>
+}
+const buffer = ((globalThis as StatsGlobals).__susuStatsBuffer ??= new Map<
+    string,
+    { requests: number; byEndpoint: Record<string, number> }
+>())
 
 export const recordRequest = (endpoint: string): void => {
     const key = today()

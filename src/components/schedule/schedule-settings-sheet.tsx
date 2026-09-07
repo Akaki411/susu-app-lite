@@ -1,11 +1,14 @@
 'use client'
-// Настройки расписания: вид (по датам / по неделям) и единый поиск источника
+// Настройки расписания: вид (по датам / по неделям), скрытие переключателя и единый поиск источника
 
 import {useEffect, useRef, useState} from 'react'
 import {Sheet} from '@/components/common/sheet.tsx'
+import {SwitchRow} from '@/components/common/switch-row.tsx'
+import {Icon} from '@/components/common/icons'
 import {useI18n} from '@/i18n'
 import {searchSchedule} from '@/lib/api-client'
-import {getRecentScheduleSources, type ScheduleSource} from '@/lib/schedule-source'
+import {getRecentScheduleSources, removeRecentScheduleSource, type ScheduleSource} from '@/lib/schedule-source'
+import {useSettings} from '@/lib/settings'
 import type {ScheduleSearchResult, ScheduleSourceKind} from '@/shared/types'
 
 type Mode = 'dates' | 'weeks'
@@ -16,9 +19,9 @@ const KIND_LABEL_KEY: Record<ScheduleSourceKind, 'schedule.kindGroup' | 'schedul
     room: 'schedule.kindRoom',
 }
 
-const sameSource = (a: ScheduleSource | null, b: ScheduleSource): boolean => !!a && a.kind === b.kind && a.id === b.id
+const LONG_PRESS_MS = 3000
 
-const SEARCH_DEBOUNCE_MS = 450
+const sameSource = (a: ScheduleSource | null, b: ScheduleSource): boolean => !!a && a.kind === b.kind && a.id === b.id
 
 export const ScheduleSettingsSheet = ({
     open,
@@ -38,10 +41,14 @@ export const ScheduleSettingsSheet = ({
     current: ScheduleSource | null
 }) => {
     const {t} = useI18n()
+    const {settings, update} = useSettings()
     const [query, setQuery] = useState('')
     const [results, setResults] = useState<ScheduleSearchResult[]>([])
     const [recent, setRecent] = useState<ScheduleSource[]>([])
+    const [menuSource, setMenuSource] = useState<ScheduleSource | null>(null)
     const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const longPressed = useRef(false)
 
     useEffect(() => {
         if (open) setRecent(getRecentScheduleSources())
@@ -60,7 +67,7 @@ export const ScheduleSettingsSheet = ({
             } catch {
                 setResults([])
             }
-        }, SEARCH_DEBOUNCE_MS)
+        }, 450)
         return () => {
             if (timer.current) clearTimeout(timer.current)
         }
@@ -71,6 +78,32 @@ export const ScheduleSettingsSheet = ({
         setQuery('')
         setResults([])
         onClose()
+    }
+
+    const deleteRecent = (s: ScheduleSource) => {
+        setRecent(removeRecentScheduleSource(s))
+        setMenuSource(null)
+    }
+
+    const startPress = (s: ScheduleSource) => {
+        longPressed.current = false
+        if (pressTimer.current) clearTimeout(pressTimer.current)
+        pressTimer.current = setTimeout(() => {
+            longPressed.current = true
+            setMenuSource(s)
+        }, LONG_PRESS_MS)
+    }
+
+    const cancelPress = () => {
+        if (pressTimer.current) clearTimeout(pressTimer.current)
+    }
+
+    const onCardClick = (s: ScheduleSource) => {
+        if (longPressed.current) {
+            longPressed.current = false
+            return
+        }
+        pick(s)
     }
 
     return (
@@ -89,6 +122,14 @@ export const ScheduleSettingsSheet = ({
                 ))}
             </div>
 
+            <SwitchRow
+                icon="calendarEvent"
+                label={t('schedule.hideSwitcher')}
+                hint={t('schedule.hideSwitcherHint')}
+                on={settings.hideScheduleSwitcher}
+                onToggle={() => update({hideScheduleSwitcher: !settings.hideScheduleSwitcher})}
+            />
+
             <div className="section-title section-title--spaced">{t('schedule.source')}</div>
 
             {query.trim().length < 2 && recent.length > 0 && (
@@ -96,19 +137,35 @@ export const ScheduleSettingsSheet = ({
                     {recent.map((r) => {
                         const active = sameSource(current, r)
                         return (
-                            <button
-                                key={`${r.kind}-${r.id}`}
-                                type="button"
-                                onClick={() => pick(r)}
-                                className={`schedule-settings__recent-card${active ? ' schedule-settings__recent-card--active' : ''}`}
-                            >
-                                <span className={`schedule-settings__recent-title${active ? ' schedule-settings__recent-title--active' : ''}`}>
-                                    {r.title}
-                                </span>
-                                <span className={`schedule-settings__recent-hint${active ? ' schedule-settings__recent-hint--active' : ''}`}>
-                                    {r.subtitle || t(KIND_LABEL_KEY[r.kind])}
-                                </span>
-                            </button>
+                            <div key={`${r.kind}-${r.id}`} className="schedule-settings__recent-item">
+                                <button
+                                    type="button"
+                                    onClick={() => onCardClick(r)}
+                                    onContextMenu={(e) => e.preventDefault()}
+                                    onTouchStart={() => startPress(r)}
+                                    onTouchEnd={cancelPress}
+                                    onTouchMove={cancelPress}
+                                    className={`schedule-settings__recent-card${active ? ' schedule-settings__recent-card--active' : ''}`}
+                                >
+                                    <span className={`schedule-settings__recent-title${active ? ' schedule-settings__recent-title--active' : ''}`}>
+                                        {r.title}
+                                    </span>
+                                    <span className={`schedule-settings__recent-hint${active ? ' schedule-settings__recent-hint--active' : ''}`}>
+                                        {r.subtitle || t(KIND_LABEL_KEY[r.kind])}
+                                    </span>
+                                </button>
+                                <button
+                                    type="button"
+                                    aria-label={t('schedule.deleteRecent')}
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        deleteRecent(r)
+                                    }}
+                                    className="schedule-settings__recent-del"
+                                >
+                                    <Icon name="x" className="schedule-settings__recent-del-icon"/>
+                                </button>
+                            </div>
                         )
                     })}
                 </div>
@@ -149,6 +206,24 @@ export const ScheduleSettingsSheet = ({
                         <span className="radio-row__hint">{own.title}</span>
                     </button>
                 )
+            )}
+
+            {menuSource && (
+                <div className="recent-menu-overlay" onClick={() => setMenuSource(null)}>
+                    <div className="recent-menu" onClick={(e) => e.stopPropagation()}>
+                        <div className="recent-menu__title">{menuSource.title}</div>
+                        <button
+                            type="button"
+                            onClick={() => deleteRecent(menuSource)}
+                            className="recent-menu__delete"
+                        >
+                            {t('schedule.deleteRecent')}
+                        </button>
+                        <button type="button" onClick={() => setMenuSource(null)} className="recent-menu__cancel">
+                            {t('common.close')}
+                        </button>
+                    </div>
+                </div>
             )}
         </Sheet>
     )

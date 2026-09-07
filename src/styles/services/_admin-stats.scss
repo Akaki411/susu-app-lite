@@ -35,7 +35,7 @@
 
   &__kpi-value {
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
 
@@ -48,7 +48,7 @@
   &__section-title {
     margin: 0.875rem 0 0.5rem;
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     color: var(--c-text-3);
@@ -84,7 +84,7 @@
 
   &__appearance-value {
     font-size: 1.125rem;
-    font-weight: 700;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
     color: var(--c-accent);
   }

@@ -42,7 +42,13 @@ export default () => {
 
     useForceRefreshIfEmpty(ratingCacheKey, data != null && data.subjects.length === 0, refreshing, refresh)
 
-    const {handlers, pullDistance} = useSwipe({onPullRefresh: () => void refresh(true)})
+    const [manualRefreshing, setManualRefreshing] = useState(false)
+    const {handlers, pullDistance} = useSwipe({
+        onPullRefresh: () => {
+            setManualRefreshing(true)
+            void refresh(true).finally(() => setManualRefreshing(false))
+        },
+    })
 
     const subjects = data?.subjects ?? []
 
@@ -61,9 +67,9 @@ export default () => {
                 />
             </div>
 
-            {(pullDistance > 0 || refreshing) && (
-                <div className="pull-refresh" style={{height: Math.max(pullDistance, refreshing ? 28 : 0)}}>
-                    {refreshing ? <span className="spinner"/> : t('schedule.pullToRefresh')}
+            {(pullDistance > 0 || manualRefreshing) && (
+                <div className="pull-refresh" style={{height: Math.max(pullDistance, manualRefreshing ? 28 : 0)}}>
+                    {manualRefreshing ? <span className="spinner"/> : t('schedule.pullToRefresh')}
                 </div>
             )}
 

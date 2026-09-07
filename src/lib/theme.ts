@@ -11,11 +11,20 @@ export const getStoredTheme = (): Theme => {
     return v === 'light' || v === 'dark' ? v : 'system'
 };
 
+const THEME_BG: Record<'light' | 'dark', string> = {light: '#e7e8ec', dark: '#131318'}
+
+export const syncMetaThemeColor = (): void => {
+    if (typeof document === 'undefined') return
+    const meta = document.getElementById('theme-color-meta')
+    if (meta) meta.setAttribute('content', isDarkActive() ? THEME_BG.dark : THEME_BG.light)
+};
+
 export const applyTheme = (theme: Theme): void => {
     if (typeof document === 'undefined') return
     const root = document.documentElement
     if (theme === 'system') root.removeAttribute('data-theme')
     else root.setAttribute('data-theme', theme)
+    syncMetaThemeColor()
 };
 
 export const setTheme = (theme: Theme): void => {
@@ -40,7 +49,10 @@ export const useTheme = () => {
         setDark(isDarkActive())
         const mq = window.matchMedia('(prefers-color-scheme: dark)')
         const onChange = () => {
-            if (getStoredTheme() === 'system') setDark(mq.matches)
+            if (getStoredTheme() === 'system') {
+                setDark(mq.matches)
+                syncMetaThemeColor()
+            }
         }
         mq.addEventListener('change', onChange)
         return () => mq.removeEventListener('change', onChange)
