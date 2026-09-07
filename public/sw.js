@@ -9,7 +9,7 @@
   При обновлении версии CACHE старые кеши удаляются.
 */
 
-const CACHE = 'susu-lite-v1.0'
+const CACHE = 'susu-lite-v1.1'
 const CORE = ['/schedule', '/rating', '/services', '/manifest.webmanifest', '/logo.webp', '/icon.png']
 
 self.addEventListener('install', (event) => {
