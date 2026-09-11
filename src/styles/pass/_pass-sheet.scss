@@ -1,4 +1,5 @@
 .pass-card {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6,18 +7,22 @@
   text-align: center;
 
   &__qr-wrap {
-    width: 15rem;
-    border-radius: 1.25rem;
-    background: #fff;
+    width: 19rem;
     padding: 0.875rem;
-    box-shadow: var(--shadow-1);
     animation: susu-pass-card-in 200ms cubic-bezier(0.22, 1.12, 0.36, 1) both;
     margin-bottom: 2rem;
   }
 
   &__qr {
-    height: 100%;
     width: 100%;
+    aspect-ratio: 1 / 1;
+    color: var(--qr-fg);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   &__ticket {
@@ -30,14 +35,14 @@
 
   &__name {
     margin-top: 0.25rem;
-    font-size: 0.84375rem;
+    font-size: 1.1rem;
     font-weight: 600;
   }
 
   &__hint {
     margin-top: 0.625rem;
     max-width: 30ch;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: var(--c-text-3);
   }
 }

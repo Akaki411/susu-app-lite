@@ -3,9 +3,9 @@
 
 import {useEffect, useState} from 'react'
 import {Sheet} from '@/components/common/sheet.tsx'
+import {QrImage} from '@/components/common/qr-image.tsx'
 import {OPEN_PASS_EVENT} from '@/components/nav/nav-items'
 import {useI18n} from '@/i18n'
-import {qrUrl} from '@/lib/api-client'
 import {getProfile} from '@/lib/token-store'
 
 export const PassSheet = () => {
@@ -19,19 +19,20 @@ export const PassSheet = () => {
     }, [])
 
     const profile = getProfile()
-    const src = qrUrl()
+    const ticket = profile?.passTicket
 
     return (
         <Sheet open={open} onClose={() => setOpen(false)} title={t('pass.title')}>
-            {src && profile ? (
+            {ticket && profile ? (
                 <div className="pass-card">
                     <div className="pass-card__qr-wrap">
-                        <img src={src} alt={t('pass.title')} className="pass-card__qr"/>
+                        <QrImage data={ticket} className="pass-card__qr" label={t('pass.title')}/>
                     </div>
                     <div className="pass-card__name">
                         {profile.lastName} {profile.firstName} · {profile.groupName}
                     </div>
                     <div className="pass-card__hint">{t('pass.hint')}</div>
+                    <div style={{width: '1px', height: "5rem"}}/>
                 </div>
             ) : (
                 <div className="empty-state empty-state--compact">{t('pass.unavailable')}</div>

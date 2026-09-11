@@ -3,8 +3,8 @@
 
 import {useState} from 'react'
 import {Sheet} from '@/components/common/sheet.tsx'
+import {QrImage} from '@/components/common/qr-image.tsx'
 import {useI18n} from '@/i18n'
-import {qrUrlFor} from '@/lib/api-client'
 import {tileConfig, useSettings} from '@/lib/settings'
 import {getProfile} from '@/lib/token-store'
 import {ServiceTileBase} from './service-tile-base.tsx'
@@ -35,7 +35,7 @@ export default () => {
                     <div className="library-card">
                         {photoSrc && <img src={photoSrc} alt="" className="library-card__photo"/>}
                         <div className="library-card__qr-wrap">
-                            <img src={qrUrlFor(card)} alt={t('library.title')} className="library-card__qr"/>
+                            <QrImage data={card} className="library-card__qr" label={t('library.title')}/>
                         </div>
                         <div className="library-card__label">{t('library.number')}</div>
                         <div className="library-card__number">{card}</div>

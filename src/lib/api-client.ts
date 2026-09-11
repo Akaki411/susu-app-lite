@@ -1,6 +1,6 @@
 'use client'
 
-import {getAccessToken, getIdentity, getProfile, getRefreshToken, saveTokens} from './token-store'
+import {getAccessToken, getIdentity, getRefreshToken, saveTokens} from './token-store'
 import {userNameFromToken} from './jwt'
 import type {
     AdminStatsResult,
@@ -146,8 +146,3 @@ export const getArticle = (link: string): Promise<NewsArticle> =>
     getJson<NewsArticle>(`/api/news/article?link=${encodeURIComponent(link)}`, 10000);
 
 export const qrUrlFor = (data: string): string => `/api/qr?data=${encodeURIComponent(data)}`;
-
-export const qrUrl = (): string | null => {
-    const ticket = getProfile()?.passTicket
-    return ticket ? qrUrlFor(ticket) : null
-};
