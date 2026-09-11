@@ -9,8 +9,14 @@
   При обновлении версии CACHE старые кеши удаляются.
 */
 
-const CACHE = 'susu-lite-v1.2'
+const VERSION = 'v1.3.1'
+const CACHE = 'susu-lite-' + VERSION
 const CORE = ['/schedule', '/rating', '/services', '/manifest.webmanifest', '/logo.webp', '/icon.png']
+
+const broadcastVersion = async () => {
+    const clients = await self.clients.matchAll({includeUncontrolled: true})
+    for (const client of clients) client.postMessage({type: 'SW_VERSION', version: VERSION})
+}
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
@@ -26,8 +32,16 @@ self.addEventListener('activate', (event) => {
         caches
             .keys()
             .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-            .then(() => self.clients.claim()),
+            .then(() => self.clients.claim())
+            .then(() => broadcastVersion()),
     )
+})
+
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'GET_VERSION') {
+        const target = event.source
+        if (target) target.postMessage({type: 'SW_VERSION', version: VERSION})
+    }
 })
 
 self.addEventListener('fetch', (event) => {

@@ -59,6 +59,26 @@ export const idbSet = async (store: Store, key: string, value: unknown): Promise
     })
 };
 
+export const idbClearAll = async (): Promise<void> => {
+    const db = await openDb()
+    if (!db) return
+    await Promise.all(
+        STORES.filter((s) => db.objectStoreNames.contains(s)).map(
+            (s) =>
+                new Promise<void>((resolve) => {
+                    try {
+                        const tx = db.transaction(s, 'readwrite')
+                        tx.objectStore(s).clear()
+                        tx.oncomplete = () => resolve()
+                        tx.onerror = () => resolve()
+                    } catch {
+                        resolve()
+                    }
+                }),
+        ),
+    )
+};
+
 export const idbDel = async (store: Store, key: string): Promise<void> => {
     const db = await openDb()
     if (!db) return

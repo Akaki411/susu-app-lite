@@ -7,6 +7,7 @@ import BottomNav from '@/components/nav/bottom-nav.tsx'
 import DesktopRail from '@/components/nav/desktop-rail.tsx'
 import {PassFab} from '@/components/pass/pass-fab.tsx'
 import {PassSheet} from '@/components/pass/pass-sheet.tsx'
+import {setupCacheReset} from '@/lib/cache-reset'
 import {navigate, useCurrentPath} from '@/lib/router'
 import {isAuthenticated} from '@/lib/token-store'
 
@@ -23,6 +24,7 @@ export default ({children}: { children: ReactNode }) => {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js').catch(() => {
             })
+            setupCacheReset()
         }
     }, [])
 
