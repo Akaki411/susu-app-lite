@@ -31,9 +31,6 @@
   --shadow-1: 0 0.0625rem 0.125rem rgba(20, 22, 30, 0.05);
   --shadow-2: 0 0.75rem 1.75rem rgba(20, 22, 30, 0.1);
   --shadow-3: 0 1.25rem 3rem rgba(20, 22, 30, 0.22);
-
-  // Только системные шрифты устройства (без веб-загрузки): SF Pro (iOS/macOS), Segoe UI (Windows),
-  // Roboto (Android) — все с полной поддержкой кириллицы. Рендерится мгновенно, работает офлайн.
   --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   --radius-sm: 0.75rem;
@@ -89,7 +86,7 @@
   --c-text: #f3f3f6;
   --c-text-2: #a6a6b0;
   --c-text-3: #9D9DA8;
-  --qr-fg: #c9c9d2;
+  --qr-fg: #ffffff;
   --c-divider: rgba(255, 255, 255, 0.09);
   --c-accent: #3f70e3;
   --c-accent-2: #7aa0f0;

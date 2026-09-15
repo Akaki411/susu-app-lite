@@ -173,6 +173,8 @@ const ar: Record<I18nKey, string> = {
     'settings.notificationsHint': 'إشعارات عن الأخبار والمحاضرات',
     'settings.feedTab': 'تبويب «الأخبار»',
     'settings.feedTabHint': 'أخبار الجامعة في شريط التنقّل',
+    'settings.qrHighContrast': 'رمز QR عالي التباين',
+    'settings.qrHighContrastHint': 'رمز أسود على خلفية بيضاء لأجهزة المسح الصعبة',
     'settings.passButton': 'زر التصريح الإلكتروني',
     'settings.passFab': 'زر عائم',
     'settings.passNav': 'في شريط التنقّل',

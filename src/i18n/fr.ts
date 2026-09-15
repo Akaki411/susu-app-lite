@@ -173,6 +173,8 @@ const fr: Record<I18nKey, string> = {
     'settings.notificationsHint': 'Push sur les actualités et les cours',
     'settings.feedTab': 'Onglet « Actualités »',
     'settings.feedTabHint': 'Actualités de l’université dans la navigation',
+    'settings.qrHighContrast': 'QR à contraste élevé',
+    'settings.qrHighContrastHint': 'Code noir sur fond blanc pour les scanners difficiles',
     'settings.passButton': 'Bouton du pass électronique',
     'settings.passFab': 'Bouton flottant',
     'settings.passNav': 'Dans la navigation',

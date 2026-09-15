@@ -37,6 +37,7 @@ export interface Settings {
     notifications: boolean
     language: LanguageCode
     hideScheduleSwitcher: boolean
+    highContrastQr: boolean
     tiles: Record<string, TileConfig>
 }
 
@@ -46,6 +47,7 @@ const DEFAULTS: Settings = {
     notifications: true,
     language: 'ru',
     hideScheduleSwitcher: false,
+    highContrastQr: false,
     tiles: {},
 }
 

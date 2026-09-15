@@ -171,6 +171,8 @@ const ru = {
     'settings.notificationsHint': 'Push о новостях и парах',
     'settings.feedTab': 'Вкладка «Лента»',
     'settings.feedTabHint': 'Новости университета в навигации',
+    'settings.qrHighContrast': 'Контрастный QR-код',
+    'settings.qrHighContrastHint': 'Чёрный код на белой подложке — для сложных сканеров',
     'settings.passButton': 'Кнопка электронного пропуска',
     'settings.passFab': 'Плавающая кнопка',
     'settings.passNav': 'В навигации',

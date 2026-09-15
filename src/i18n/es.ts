@@ -173,6 +173,8 @@ const es: Record<I18nKey, string> = {
     'settings.notificationsHint': 'Avisos push de noticias y clases',
     'settings.feedTab': 'Pestaña «Noticias»',
     'settings.feedTabHint': 'Noticias de la universidad en la navegación',
+    'settings.qrHighContrast': 'QR de alto contraste',
+    'settings.qrHighContrastHint': 'Código negro sobre fondo blanco para escáneres exigentes',
     'settings.passButton': 'Botón del pase electrónico',
     'settings.passFab': 'Botón flotante',
     'settings.passNav': 'En la navegación',

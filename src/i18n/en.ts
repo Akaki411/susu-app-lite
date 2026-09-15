@@ -173,6 +173,8 @@ const en: Record<I18nKey, string> = {
     'settings.notificationsHint': 'Push about news and classes',
     'settings.feedTab': '“Feed” tab',
     'settings.feedTabHint': 'University news in the navigation',
+    'settings.qrHighContrast': 'High-contrast QR',
+    'settings.qrHighContrastHint': 'Black code on a white plate for finicky scanners',
     'settings.passButton': 'Electronic pass button',
     'settings.passFab': 'Floating button',
     'settings.passNav': 'In navigation',

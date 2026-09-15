@@ -173,6 +173,8 @@ const zh: Record<I18nKey, string> = {
     'settings.notificationsHint': '新闻与课程的推送',
     'settings.feedTab': '“资讯”标签',
     'settings.feedTabHint': '导航栏中的大学新闻',
+    'settings.qrHighContrast': '高对比度二维码',
+    'settings.qrHighContrastHint': '黑色码配白色底板，适配挑剔的扫描器',
     'settings.passButton': '电子通行证按钮',
     'settings.passFab': '悬浮按钮',
     'settings.passNav': '在导航栏',

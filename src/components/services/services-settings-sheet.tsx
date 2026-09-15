@@ -50,6 +50,13 @@ export const ServicesSettingsSheet = ({
                     on={settings.feedEnabled}
                     onToggle={() => update({feedEnabled: !settings.feedEnabled})}
                 />
+                <SwitchRow
+                    icon="qrcode"
+                    label={t('settings.qrHighContrast')}
+                    hint={t('settings.qrHighContrastHint')}
+                    on={settings.highContrastQr}
+                    onToggle={() => update({highContrastQr: !settings.highContrastQr})}
+                />
 
                 <div className="section-title section-title--spaced">{t('settings.passButton')}</div>
                 <div className="segmented">
