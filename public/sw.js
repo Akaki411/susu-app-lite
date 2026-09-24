@@ -9,7 +9,7 @@
   При обновлении версии CACHE старые кеши удаляются.
 */
 
-const VERSION = 'v1.4'
+const VERSION = 'v1.4.1'
 const CACHE = 'susu-lite-' + VERSION
 const CORE = ['/schedule', '/rating', '/services', '/manifest.webmanifest', '/logo.webp', '/icon.png']
 

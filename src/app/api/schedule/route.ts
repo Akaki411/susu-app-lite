@@ -32,6 +32,11 @@ export async function GET(request: Request): Promise<Response> {
         const cacheKey = `sched:${kind}:${id}`
         let data = force ? null : await cache.getJson<ScheduleData>(cacheKey)
 
+        if (data && (data.scheduleId !== id || data.kind !== kind)) {
+            console.error(`[schedule] Cache pollution detected: requested ${kind}:${id}, got ${data.kind}:${data.scheduleId}. Overwriting cache.`)
+            data = null
+        }
+
         if (!data) {
             const res = await getSchedule(id, kind, bearer)
             if (res.status === 401) return json({error: 'unauthorized'}, 401)

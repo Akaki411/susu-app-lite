@@ -67,6 +67,7 @@ const ar: Record<I18nKey, string> = {
     'schedule.weekParityI': 'الأسبوع الأول',
     'schedule.weekParityII': 'الأسبوع الثاني',
     'schedule.noClasses': 'لا توجد محاضرات',
+    'schedule.notFound': 'لم يتم العثور على شيء',
     'schedule.pullToRefresh': 'اسحب للأسفل للتحديث',
     'schedule.calendar': 'اختيار التاريخ',
 

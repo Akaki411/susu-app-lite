@@ -157,20 +157,28 @@ export const getSchedule = async (
     return {status: 200, events}
 }
 
-export const searchSchedules = async (query: string, bearer: string): Promise<ScheduleSearchResult[]> => {
+export const searchSchedules = async (
+    query: string,
+    bearer: string,
+): Promise<{ status: number; results: ScheduleSearchResult[] }> => {
     const res = await post('/api/Schedule/SearchSchedules', {searchValue: query}, bearer)
-    if (res.status !== 200) return []
+    if (res.status !== 200) return {status: res.status, results: []}
     const raw = (await res.json().catch(() => [])) as Array<Record<string, unknown>>
-    if (!Array.isArray(raw)) return []
-    return raw.map((r) => {
-        const kind: ScheduleSourceKind = r.isLecturer ? 'instructor' : r.isRoom ? 'room' : 'group'
+    if (!Array.isArray(raw)) return {status: 200, results: []}
+    const results = raw.map((r) => {
+        const isLecturer = Boolean(r.isLecturer || r.isTeacher || r.isInstructor)
+        const isRoom = Boolean(r.isRoom || r.isAudience || r.isAuditory)
+        const kind: ScheduleSourceKind = isLecturer ? 'instructor' : isRoom ? 'room' : 'group'
+        const title = String(r.shortName ?? r.fullName ?? r.name ?? r.fio ?? r.title ?? '').trim()
+        const subtitle = String(r.description ?? '').trim()
         return {
             id: String(r.id ?? ''),
             kind,
-            title: String(r.shortName ?? r.fullName ?? ''),
-            subtitle: String(r.description ?? ''),
+            title: title || String(r.id ?? ''),
+            subtitle,
         }
     })
+    return {status: 200, results}
 }
 
 export const getStudyPlan = async (bearer: string): Promise<StudyPlan | null> => {

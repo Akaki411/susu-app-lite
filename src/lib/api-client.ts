@@ -47,7 +47,7 @@ const refreshTokens = async (): Promise<boolean> => {
             const {signal, done} = withTimeout(DEFAULT_TIMEOUT)
             const res = await fetch('/api/auth/refresh', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {'Content-Type': 'application/json', 'X-Client-Identity': identity},
                 body: JSON.stringify({userName, identity, refreshToken}),
                 signal,
             })
@@ -73,8 +73,10 @@ const authed = async (
     retried = false,
 ): Promise<Response> => {
     const token = getAccessToken()
+    const identity = getIdentity()
     const headers = new Headers(init.headers)
     if (token) headers.set('Authorization', `Bearer ${token}`)
+    if (identity) headers.set('X-Client-Identity', identity)
 
     const {signal, done} = withTimeout(timeout)
     let res: Response
@@ -99,11 +101,12 @@ const getJson = async <T>(path: string, timeout = DEFAULT_TIMEOUT): Promise<T> =
 
 export const login = async (loginName: string, password: string): Promise<LoginResult> => {
     const {signal, done} = withTimeout(DEFAULT_TIMEOUT)
+    const identity = getIdentity()
     try {
         const res = await fetch('/api/auth/login', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({identity: getIdentity(), login: loginName, password}),
+            headers: {'Content-Type': 'application/json', 'X-Client-Identity': identity},
+            body: JSON.stringify({identity, login: loginName, password}),
             signal,
         })
         const data = (await res.json().catch(() => ({ok: false}))) as LoginResult
@@ -127,7 +130,8 @@ export const getSchedule = (
     return getJson<ScheduleData>(`/api/schedule?${q.toString()}`)
 };
 
-export const searchSchedule = (query: string): Promise<ScheduleSearchResult[]> => getJson<ScheduleSearchResult[]>(`/api/schedule/search?q=${encodeURIComponent(query)}`);
+export const searchSchedule = (query: string): Promise<ScheduleSearchResult[]> =>
+    getJson<ScheduleSearchResult[]>(`/api/schedule/search?q=${encodeURIComponent(query)}`, 15000);
 
 export const getStudyPlan = (): Promise<StudyPlan> => getJson<StudyPlan>('/api/studyplan');
 

@@ -44,39 +44,70 @@ export const ScheduleSettingsSheet = ({
     const {settings, update} = useSettings()
     const [query, setQuery] = useState('')
     const [results, setResults] = useState<ScheduleSearchResult[]>([])
+    const [searching, setSearching] = useState(false)
+    const [searchError, setSearchError] = useState(false)
     const [recent, setRecent] = useState<ScheduleSource[]>([])
     const [menuSource, setMenuSource] = useState<ScheduleSource | null>(null)
     const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const searchSeq = useRef(0)
     const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
     const longPressed = useRef(false)
 
     useEffect(() => {
-        if (open) setRecent(getRecentScheduleSources())
+        if (open) {
+            setRecent(getRecentScheduleSources())
+        } else {
+            searchSeq.current++
+            setQuery('')
+            setResults([])
+            setSearching(false)
+            setSearchError(false)
+        }
     }, [open])
 
     useEffect(() => {
         if (timer.current) clearTimeout(timer.current)
         const q = query.trim()
         if (q.length < 2) {
+            searchSeq.current++
             setResults([])
+            setSearching(false)
+            setSearchError(false)
             return
         }
+        setSearching(true)
+        setSearchError(false)
+        const seq = ++searchSeq.current
         timer.current = setTimeout(async () => {
             try {
-                setResults(await searchSchedule(q))
+                const data = await searchSchedule(q)
+                if (searchSeq.current === seq) {
+                    setResults(data)
+                    setSearchError(false)
+                }
             } catch {
-                setResults([])
+                if (searchSeq.current === seq) {
+                    setResults([])
+                    setSearchError(true)
+                }
+            } finally {
+                if (searchSeq.current === seq) {
+                    setSearching(false)
+                }
             }
-        }, 450)
+        }, 350)
         return () => {
             if (timer.current) clearTimeout(timer.current)
         }
     }, [query])
 
     const pick = (s: ScheduleSource) => {
+        searchSeq.current++
         onSourceChange(s)
         setQuery('')
         setResults([])
+        setSearching(false)
+        setSearchError(false)
         onClose()
     }
 
@@ -182,12 +213,28 @@ export const ScheduleSettingsSheet = ({
 
             {query.trim().length >= 2 ? (
                 <div className="schedule-settings__results">
+                    {searching && results.length === 0 && (
+                        <div className="empty-state empty-state--compact" style={{padding: '1.25rem 0'}}>
+                            <span className="spinner"/>
+                        </div>
+                    )}
+                    {searchError && !searching && (
+                        <div className="empty-state empty-state--compact">
+                            {t('common.error')}
+                        </div>
+                    )}
+                    {!searchError && !searching && results.length === 0 && (
+                        <div className="empty-state empty-state--compact">
+                            {t('schedule.notFound')}
+                        </div>
+                    )}
                     {results.map((r) => (
                         <button
                             key={`${r.kind}-${r.id}`}
                             type="button"
                             onClick={() => pick({id: r.id, kind: r.kind, title: r.title, subtitle: r.subtitle})}
                             className="schedule-settings__result"
+                            style={searching ? {opacity: 0.6} : undefined}
                         >
                             <span className="schedule-settings__result-title">{r.title}</span>
                             {r.subtitle && <span className="schedule-settings__result-subtitle">{r.subtitle}</span>}

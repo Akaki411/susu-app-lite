@@ -67,6 +67,7 @@ const fr: Record<I18nKey, string> = {
     'schedule.weekParityI': 'Semaine I',
     'schedule.weekParityII': 'Semaine II',
     'schedule.noClasses': 'Aucun cours',
+    'schedule.notFound': 'Rien trouvé',
     'schedule.pullToRefresh': 'Tirez vers le bas pour actualiser',
     'schedule.calendar': 'Choisir une date',
 

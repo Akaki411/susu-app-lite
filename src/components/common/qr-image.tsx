@@ -4,6 +4,7 @@
 import {useEffect, useRef, useState, type CSSProperties} from 'react'
 import {qrUrlFor} from '@/lib/api-client'
 import {useSettings} from '@/lib/settings'
+import {getIdentity} from '@/lib/token-store'
 
 const DOUBLE_TAP_MS = 320
 
@@ -16,7 +17,8 @@ export const QrImage = ({data, className, label}: { data: string; className?: st
     useEffect(() => {
         let cancelled = false
         setSvg(null)
-        fetch(qrUrlFor(data))
+        const identity = getIdentity()
+        fetch(qrUrlFor(data), {headers: identity ? {'X-Client-Identity': identity} : undefined})
             .then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status)))))
             .then((text) => {
                 if (!cancelled) setSvg(text)

@@ -36,25 +36,31 @@ export function useOfflineData<T>({
     const fetcherRef = useRef(fetcher)
     fetcherRef.current = fetcher
 
+    const activeKeyRef = useRef(cacheKey)
+    activeKeyRef.current = cacheKey
+
     const refresh = useCallback(async (force = false) => {
         if (!enabled) return
+        const requestKey = cacheKey
         setRefreshing(true)
         setError(false)
         try {
             const fresh = await fetcherRef.current(force)
+            if (activeKeyRef.current !== requestKey) return
             setData(fresh)
             setFromNetwork(true)
-            void idbSet(store, cacheKey, fresh)
+            void idbSet(store, requestKey, fresh)
         } catch {
-            setError(true)
+            if (activeKeyRef.current === requestKey) setError(true)
         } finally {
-            setRefreshing(false)
+            if (activeKeyRef.current === requestKey) setRefreshing(false)
         }
     }, [enabled, store, cacheKey])
 
     useEffect(() => {
         let cancelled = false
         setLoading(true)
+        setData(null)
         idbGet<T>(store, cacheKey).then((cached) => {
             if (cancelled) return
             if (cached != null) setData(cached)

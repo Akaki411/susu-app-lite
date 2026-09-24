@@ -67,6 +67,7 @@ const zh: Record<I18nKey, string> = {
     'schedule.weekParityI': '第一周',
     'schedule.weekParityII': '第二周',
     'schedule.noClasses': '暂无课程',
+    'schedule.notFound': '未找到内容',
     'schedule.pullToRefresh': '下拉刷新',
     'schedule.calendar': '选择日期',
 

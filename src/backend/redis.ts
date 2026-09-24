@@ -14,9 +14,18 @@ export const getRedis = async (): Promise<RedisClientType> => {
     if (!client) {
         client = createClient({
             url: config.redisUrl,
-            socket: {connectTimeout: 3000, reconnectStrategy: false},
+            socket: {
+                connectTimeout: 5000,
+                reconnectStrategy: (retries) => Math.min(retries * 50, 1000),
+            },
         })
-        client.on('error', (e) => console.error('[redis]', e instanceof Error ? e.message : e))
+        client.on('error', (e) => {
+            console.error('[redis]', e instanceof Error ? e.message : e)
+            if (client && !client.isOpen) {
+                client = null
+                connecting = null
+            }
+        })
     }
     if (!client.isOpen) {
         connecting ??= client.connect().then(

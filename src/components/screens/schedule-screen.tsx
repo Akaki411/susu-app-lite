@@ -83,7 +83,14 @@ export default () => {
 
     useForceRefreshIfEmpty(scheduleCacheKey, data != null && data.events.length === 0, refreshing, refresh)
 
-    const byDate = useMemo(() => groupByDate(data?.events ?? []), [data])
+    const isValidData = !data || !source || (data.scheduleId === source.id && data.kind === source.kind)
+    useEffect(() => {
+        if (data && source && (data.scheduleId !== source.id || data.kind !== source.kind)) {
+            void refresh(true)
+        }
+    }, [data, source, refresh])
+
+    const byDate = useMemo(() => groupByDate(isValidData ? (data?.events ?? []) : []), [data, isValidData])
 
     const autoPickedForRef = useRef<string | null>(null)
     useEffect(() => {

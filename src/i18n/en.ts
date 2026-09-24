@@ -67,6 +67,7 @@ const en: Record<I18nKey, string> = {
     'schedule.weekParityI': 'Week I',
     'schedule.weekParityII': 'Week II',
     'schedule.noClasses': 'No classes',
+    'schedule.notFound': 'Nothing found',
     'schedule.pullToRefresh': 'Pull down to refresh',
     'schedule.calendar': 'Pick a date',
 

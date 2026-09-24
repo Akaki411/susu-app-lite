@@ -65,6 +65,7 @@ const ru = {
     'schedule.weekParityI': 'I неделя',
     'schedule.weekParityII': 'II неделя',
     'schedule.noClasses': 'Занятий нет',
+    'schedule.notFound': 'Ничего не найдено',
     'schedule.pullToRefresh': 'Потяните вниз для обновления',
     'schedule.calendar': 'Выбор даты',
 
