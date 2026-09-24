@@ -1,9 +1,10 @@
 'use client'
 // Нижняя навигация (мобильная). Полупрозрачная с размытием, как в дизайне.
 
+import { useEffect, useMemo } from 'react'
 import { Icon } from '@/components/common/icons'
 import { useI18n } from '@/i18n'
-import { navigate, useCurrentPath } from '@/lib/router'
+import { navigate, prefetch, useCurrentPath } from '@/lib/router'
 import { useSettings } from '@/lib/settings'
 import { buildNavItems, openPass, type NavItem } from './nav-items'
 
@@ -11,11 +12,22 @@ export default () => {
   const { settings } = useSettings()
   const { t } = useI18n()
   const pathname = useCurrentPath()
-  const items = buildNavItems(settings)
+  const items = useMemo(() => buildNavItems(settings), [settings.feedEnabled, settings.passButtonMode])
+
+  useEffect(() => {
+    for (const item of items) {
+      if (item.kind === 'route' && item.href) {
+        prefetch(item.href)
+      }
+    }
+  }, [items])
 
   const onClick = (item: NavItem) => {
     if (item.kind === 'action') openPass()
-    else if (item.href) navigate(item.href)
+    else if (item.href) {
+      if (pathname === item.href) return
+      navigate(item.href)
+    }
   }
 
   return (
@@ -27,6 +39,8 @@ export default () => {
             key={item.id}
             type="button"
             onClick={() => onClick(item)}
+            onMouseEnter={() => { if (item.href && pathname !== item.href) prefetch(item.href) }}
+            onTouchStart={() => { if (item.href && pathname !== item.href) prefetch(item.href) }}
             className="bottom-nav__item"
             aria-current={active ? 'page' : undefined}
           >

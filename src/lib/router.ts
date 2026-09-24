@@ -18,6 +18,17 @@ const ensureHistoryPatched = (): void => {
     }
 }
 
+export const prefetch = (href: string): void => {
+    if (typeof window === 'undefined') return
+    try {
+        const url = new URL(href, window.location.origin)
+        void fetch(url.pathname + url.search, {
+            headers: {Accept: 'text/x-component'},
+            priority: 'low',
+        }).catch(() => {})
+    } catch {}
+}
+
 export const navigate = (href: string, opts?: { replace?: boolean }): void => {
     void Promise.resolve(rariRouter.navigate(href, opts)).then(() => {
         if (typeof window !== 'undefined') window.dispatchEvent(new Event('rari:locationchange'))
@@ -34,9 +45,11 @@ export const useCurrentPath = (): string => {
         update()
         window.addEventListener('popstate', update)
         window.addEventListener('rari:locationchange', update)
+        window.addEventListener('rari:navigate-error', update)
         return () => {
             window.removeEventListener('popstate', update)
             window.removeEventListener('rari:locationchange', update)
+            window.removeEventListener('rari:navigate-error', update)
         }
     }, [])
     return path

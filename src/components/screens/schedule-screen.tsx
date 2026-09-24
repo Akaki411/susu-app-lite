@@ -216,6 +216,7 @@ export default () => {
             setManualRefreshing(true)
             void refresh(true).finally(() => setManualRefreshing(false))
         },
+        pullFromHeaderOnly: true,
     })
 
     const onSlideSettled = () => {
@@ -313,7 +314,7 @@ export default () => {
     };
 
     return (
-        <div className="screen">
+        <div className="screen screen--no-overscroll" {...handlers}>
             <div className="screen__header">
                 <PageHeader
                     title={t('schedule.title')}
@@ -328,7 +329,7 @@ export default () => {
                 )}
             </div>
 
-            <div className="schedule__content" {...handlers}>
+            <div className="schedule__content">
                 {(pullDistance > 0 || manualRefreshing) && (
                     <div className="pull-refresh" style={{height: Math.max(pullDistance, manualRefreshing ? 28 : 0)}}>
                         {manualRefreshing ? <span className="spinner"/> : t('schedule.pullToRefresh')}

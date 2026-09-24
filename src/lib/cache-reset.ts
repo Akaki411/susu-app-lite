@@ -1,7 +1,6 @@
 'use client'
 // Полная очистка кеша при обновлении версии приложения
 
-import {idbClearAll} from './idb'
 
 const VERSION_KEY = 'susu_cache_version'
 
@@ -54,7 +53,6 @@ const applyVersion = async (version: string): Promise<void> => {
     }
 
     clearGeneratedLocalStorage()
-    await idbClearAll()
 
     if (isUpgrade && wrote) location.reload()
 }

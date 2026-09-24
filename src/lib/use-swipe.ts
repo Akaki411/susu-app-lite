@@ -6,14 +6,20 @@ interface SwipeCallbacks {
     onSwipeLeft?: () => void
     onSwipeRight?: () => void
     onPullRefresh?: () => void
+    pullFromHeaderOnly?: boolean
 }
 
 const H_THRESHOLD = 60
 const V_THRESHOLD = 70
 const MAX_PULL = 90
 
-export const useSwipe = ({onSwipeLeft, onSwipeRight, onPullRefresh}: SwipeCallbacks) => {
-    const start = useRef<{ x: number; y: number; atTop: boolean } | null>(null)
+export const useSwipe = ({
+    onSwipeLeft,
+    onSwipeRight,
+    onPullRefresh,
+    pullFromHeaderOnly = false,
+}: SwipeCallbacks) => {
+    const start = useRef<{ x: number; y: number; atTop: boolean; fromHeader: boolean } | null>(null)
     const [pullDistance, setPullDistance] = useState(0)
 
     const onTouchStart = (e: TouchEvent<HTMLElement>) => {
@@ -21,7 +27,9 @@ export const useSwipe = ({onSwipeLeft, onSwipeRight, onPullRefresh}: SwipeCallba
         if (!t) return
         const el = e.currentTarget
         const atTop = el.scrollTop <= 0 && (typeof window === 'undefined' || window.scrollY <= 0)
-        start.current = {x: t.clientX, y: t.clientY, atTop}
+        const target = e.target as Element | null
+        const fromHeader = Boolean(target?.closest?.('.screen__header, .page-header'))
+        start.current = {x: t.clientX, y: t.clientY, atTop, fromHeader}
     };
 
     const onTouchMove = (e: TouchEvent<HTMLElement>) => {
@@ -30,7 +38,8 @@ export const useSwipe = ({onSwipeLeft, onSwipeRight, onPullRefresh}: SwipeCallba
         if (!s || !t) return
         const dy = t.clientY - s.y
         const dx = t.clientX - s.x
-        if (onPullRefresh && s.atTop && dy > 0 && Math.abs(dy) > Math.abs(dx)) {
+        const isPullAllowed = !pullFromHeaderOnly || s.fromHeader
+        if (onPullRefresh && s.atTop && isPullAllowed && dy > 0 && Math.abs(dy) > Math.abs(dx)) {
             setPullDistance(Math.min(dy * 0.5, MAX_PULL))
         }
     };
@@ -45,8 +54,9 @@ export const useSwipe = ({onSwipeLeft, onSwipeRight, onPullRefresh}: SwipeCallba
         }
         const dx = t.clientX - s.x
         const dy = t.clientY - s.y
+        const isPullAllowed = !pullFromHeaderOnly || s.fromHeader
 
-        if (onPullRefresh && s.atTop && dy > V_THRESHOLD && Math.abs(dy) > Math.abs(dx)) {
+        if (onPullRefresh && s.atTop && isPullAllowed && dy > V_THRESHOLD && Math.abs(dy) > Math.abs(dx)) {
             onPullRefresh()
             setPullDistance(0)
             return

@@ -65,6 +65,7 @@ export default () => {
             setManualRefreshing(true)
             void refresh(true).finally(() => setManualRefreshing(false))
         },
+        pullFromHeaderOnly: true,
     })
 
     const subjects = data?.subjects ?? []
@@ -75,7 +76,7 @@ export default () => {
     }
 
     return (
-        <div className="screen" {...handlers}>
+        <div className="screen screen--no-overscroll" {...handlers}>
             <div className="screen__header">
                 <PageHeader
                     title={t('rating.title')}

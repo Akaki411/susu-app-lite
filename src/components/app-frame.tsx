@@ -13,6 +13,18 @@ import {isAuthenticated} from '@/lib/token-store'
 
 export default ({children}: { children: ReactNode }) => {
     const pathname = useCurrentPath()
+    const isNoOverscroll = pathname === '/schedule' || pathname === '/rating'
+
+    useEffect(() => {
+        if (typeof document === 'undefined') return
+        if (isNoOverscroll) {
+            document.documentElement.setAttribute('data-no-overscroll', 'true')
+            document.body.setAttribute('data-no-overscroll', 'true')
+        } else {
+            document.documentElement.removeAttribute('data-no-overscroll')
+            document.body.removeAttribute('data-no-overscroll')
+        }
+    }, [isNoOverscroll])
 
     useEffect(() => {
         const authed = isAuthenticated()

@@ -7,7 +7,14 @@ html,
 body {
   margin: 0;
   padding: 0;
-  overscroll-behavior: none;
+  overscroll-behavior-x: none;
+}
+
+html:has(.screen--no-overscroll),
+body:has(.screen--no-overscroll),
+html[data-no-overscroll='true'],
+body[data-no-overscroll='true'] {
+  overscroll-behavior-y: none;
 }
 
 body {
