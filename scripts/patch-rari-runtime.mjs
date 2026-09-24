@@ -128,7 +128,7 @@ const patchGetClientComponentPathGuard = () => {
     }
 };
 
-const UTF8_BYTE_LENGTH_FN = `function __rariUtf8ByteLength(str){if(typeof Buffer!=='undefined'&&Buffer.byteLength)return Buffer.byteLength(str,'utf8');return new TextEncoder().encode(str).length;}\n`
+const UTF8_BYTE_LENGTH_FN = `function __rariUtf8ByteLength(str){let len=0;for(let i=0;i<str.length;i++){const code=str.charCodeAt(i);if(code<0x80)len+=1;else if(code<0x800)len+=2;else if(code>=0xD800&&code<=0xDBFF){len+=4;i++;}else len+=3;}return len;}\n`
 
 const patchRedisEncoderBufferByteLength = () => {
     let file
@@ -141,13 +141,7 @@ const patchRedisEncoderBufferByteLength = () => {
     const src = readFileSync(file, 'utf-8')
     const MARKER = '__rariUtf8ByteLength'
     if (src.includes(MARKER)) {
-        const next = src.replace(/function __rariUtf8ByteLength\([^)]*\)\{[^}]*\}/, UTF8_BYTE_LENGTH_FN.trim())
-        if (next !== src) {
-            writeFileSync(file, next, 'utf-8')
-            console.warn(`[patch] @redis/client: обновлен __rariUtf8ByteLength на безопасный UTF-8 (${file})`)
-        } else {
-            console.warn('[patch] @redis/client: уже пропатчен')
-        }
+        console.warn('[patch] @redis/client: уже пропатчен')
         return
     }
     const CALL_OLD = "'$' + Buffer.byteLength(arg) + CRLF + arg + CRLF;"

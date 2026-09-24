@@ -1,0 +1,55 @@
+.schedule-update {
+  &__intro {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    color: var(--c-text-2);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 0.125rem;
+  }
+
+  &__day {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  &__day + &__day {
+    padding-top: 1.25rem;
+    border-top: 0.0625rem solid var(--c-divider);
+  }
+
+  &__day-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--c-text-2);
+  }
+
+  &__col-label {
+    margin-bottom: 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--c-text-3);
+  }
+
+  &__col + &__col {
+    margin-top: 0.625rem;
+  }
+
+  &__col-empty {
+    border-radius: var(--radius-md);
+    background: var(--c-surface-2);
+    padding: 0.75rem 1rem;
+    font-size: 0.84375rem;
+    color: var(--c-text-3);
+  }
+}

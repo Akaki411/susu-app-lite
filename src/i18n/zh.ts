@@ -73,6 +73,10 @@ const zh: Record<I18nKey, string> = {
     'schedule.pullToReload': '下拉重新加载页面',
     'schedule.releaseToReload': '释放重新加载页面',
     'schedule.calendar': '选择日期',
+    'schedule.updateTitle': '课表有变动',
+    'schedule.updateIntro': '按天列出的变动如下：',
+    'schedule.updateWas': '原来',
+    'schedule.updateNow': '现在',
 
     'rating.title': '成绩',
     'rating.subtitle': '积分评分系统',

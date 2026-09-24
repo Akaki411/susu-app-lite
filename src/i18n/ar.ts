@@ -73,6 +73,10 @@ const ar: Record<I18nKey, string> = {
     'schedule.pullToReload': 'اسحب للأسفل لإعادة تحميل الصفحة',
     'schedule.releaseToReload': 'أفلت لإعادة تحميل الصفحة',
     'schedule.calendar': 'اختيار التاريخ',
+    'schedule.updateTitle': 'تغيّر الجدول',
+    'schedule.updateIntro': 'إليك ما تغيّر حسب اليوم:',
+    'schedule.updateWas': 'كان',
+    'schedule.updateNow': 'أصبح',
 
     'rating.title': 'التقييم',
     'rating.subtitle': 'نظام التقييم بالنقاط',

@@ -73,6 +73,10 @@ const fr: Record<I18nKey, string> = {
     'schedule.pullToReload': 'Tirez vers le bas pour recharger la page',
     'schedule.releaseToReload': 'Relâchez pour recharger la page',
     'schedule.calendar': 'Choisir une date',
+    'schedule.updateTitle': "L'emploi du temps a changé",
+    'schedule.updateIntro': 'Voici ce qui a changé, jour par jour :',
+    'schedule.updateWas': 'Avant',
+    'schedule.updateNow': 'Maintenant',
 
     'rating.title': 'Notes',
     'rating.subtitle': 'Système de notation par points',

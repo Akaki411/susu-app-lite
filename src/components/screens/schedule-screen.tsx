@@ -13,8 +13,10 @@ import {DayBlock} from '@/components/schedule/day-block.tsx'
 import {WeekStrip} from '@/components/schedule/week-strip.tsx'
 import {CalendarSheet} from '@/components/schedule/calendar-sheet.tsx'
 import {ScheduleSettingsSheet} from '@/components/schedule/schedule-settings-sheet.tsx'
+import {ScheduleUpdateSheet} from '@/components/schedule/schedule-update-sheet.tsx'
 import {useI18n} from '@/i18n'
 import {getSchedule} from '@/lib/api-client'
+import {diffSchedules, type DayDiff} from '@/lib/schedule-diff'
 import {
     clearViewedScheduleSource,
     getOwnScheduleSource,
@@ -71,6 +73,7 @@ export default () => {
     const [weekSlide, setWeekSlide] = useState<{ dir: 'left' | 'right' } | null>(null)
     const [manualRefreshing, setManualRefreshing] = useState(false)
     const [pageReloading, setPageReloading] = useState(false)
+    const [updateDiffs, setUpdateDiffs] = useState<DayDiff[] | null>(null)
     const weeksScrollRef = useRef<HTMLDivElement | null>(null)
 
     const scheduleCacheKey = source ? `${source.kind}:${source.id}` : 'none'
@@ -85,6 +88,17 @@ export default () => {
         return !Array.isArray(d.events) || d.events.length === 0
     }, [])
 
+    const onFreshSchedule = useCallback(
+        (prev: ScheduleData | null, fresh: ScheduleData) => {
+            if (!ownSource) return
+            if (fresh.kind !== ownSource.kind || fresh.scheduleId.toLowerCase() !== ownSource.id.toLowerCase()) return
+            if (!isScheduleData(prev)) return
+            const diffs = diffSchedules(prev.events, fresh.events)
+            if (diffs.length > 0) setUpdateDiffs(diffs)
+        },
+        [ownSource, isScheduleData],
+    )
+
     const {data, refreshing, refresh} = useOfflineData<ScheduleData>({
         store: 'schedule',
         cacheKey: scheduleCacheKey,
@@ -92,6 +106,7 @@ export default () => {
         fetcher: (force) => getSchedule(source!.id, source!.kind, {force}),
         isValid: isScheduleData,
         isEmpty: isScheduleEmpty,
+        onFresh: onFreshSchedule,
     })
 
     useForceRefreshIfEmpty(
@@ -404,6 +419,7 @@ export default () => {
                     setMode('dates')
                 }}
             />
+            <ScheduleUpdateSheet diffs={updateDiffs} onClose={() => setUpdateDiffs(null)}/>
         </div>
     )
 }

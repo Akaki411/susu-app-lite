@@ -71,6 +71,10 @@ const ru = {
     'schedule.pullToReload': 'Потяните для перезагрузки страницы',
     'schedule.releaseToReload': 'Отпустите для перезагрузки страницы',
     'schedule.calendar': 'Выбор даты',
+    'schedule.updateTitle': 'Расписание изменилось',
+    'schedule.updateIntro': 'Вот что изменилось по дням:',
+    'schedule.updateWas': 'Было',
+    'schedule.updateNow': 'Стало',
 
     'rating.title': 'Рейтинг',
     'rating.subtitle': 'Балльно-рейтинговая система',

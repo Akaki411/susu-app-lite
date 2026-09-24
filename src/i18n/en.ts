@@ -73,6 +73,10 @@ const en: Record<I18nKey, string> = {
     'schedule.pullToReload': 'Pull down to reload page',
     'schedule.releaseToReload': 'Release to reload page',
     'schedule.calendar': 'Pick a date',
+    'schedule.updateTitle': 'Schedule changed',
+    'schedule.updateIntro': "Here's what changed, by day:",
+    'schedule.updateWas': 'Was',
+    'schedule.updateNow': 'Now',
 
     'rating.title': 'Rating',
     'rating.subtitle': 'Point-rating system',

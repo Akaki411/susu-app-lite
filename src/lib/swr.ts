@@ -11,6 +11,7 @@ interface OfflineDataOptions<T> {
     auto?: boolean
     isValid?: (data: unknown) => data is T
     isEmpty?: (data: T) => boolean
+    onFresh?: (prev: T | null, fresh: T) => void
 }
 
 interface OfflineDataResult<T> {
@@ -30,6 +31,7 @@ export function useOfflineData<T>({
   auto = true,
   isValid,
   isEmpty,
+  onFresh,
 }: OfflineDataOptions<T>): OfflineDataResult<T> {
     const [data, setData] = useState<T | null>(null)
     const [loading, setLoading] = useState(true)
@@ -39,6 +41,9 @@ export function useOfflineData<T>({
 
     const fetcherRef = useRef(fetcher)
     fetcherRef.current = fetcher
+
+    const onFreshRef = useRef(onFresh)
+    onFreshRef.current = onFresh
 
     const activeKeyRef = useRef(cacheKey)
     activeKeyRef.current = cacheKey
@@ -62,6 +67,7 @@ export function useOfflineData<T>({
                     return current
                 }
                 void idbSet(store, requestKey, fresh)
+                onFreshRef.current?.(current, fresh)
                 return fresh
             })
             setFromNetwork(true)
