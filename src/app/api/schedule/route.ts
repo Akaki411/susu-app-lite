@@ -18,36 +18,55 @@ export async function GET(request: Request): Promise<Response> {
         if (!bearer) return error('Требуется авторизация', 401)
 
         const url = new URL(request.url)
-        const id = url.searchParams.get('id')
+        const rawId = url.searchParams.get('id')
         const kind = url.searchParams.get('kind') as ScheduleSourceKind | null
         const from = url.searchParams.get('from')
         const to = url.searchParams.get('to')
         const force = url.searchParams.get('force') === '1'
 
-        if (!isGuid(id)) return error('Некорректный id источника', 400)
+        if (!isGuid(rawId)) return error('Некорректный id источника', 400)
         if (!kind || !KINDS.includes(kind)) return error('Некорректный тип источника', 400)
         if (from && !isIsoDate(from)) return error('Некорректная дата from', 400)
         if (to && !isIsoDate(to)) return error('Некорректная дата to', 400)
 
+        const id = rawId.toLowerCase()
         const cacheKey = `sched:${kind}:${id}`
-        let data = force ? null : await cache.getJson<ScheduleData>(cacheKey)
+        let cached = await cache.getJson<ScheduleData>(cacheKey)
 
-        if (data && (data.scheduleId !== id || data.kind !== kind)) {
-            console.error(`[schedule] Cache pollution detected: requested ${kind}:${id}, got ${data.kind}:${data.scheduleId}. Overwriting cache.`)
-            data = null
+        if (cached && (cached.scheduleId.toLowerCase() !== id || cached.kind !== kind)) {
+            console.error(`[schedule] Cache pollution detected: requested ${kind}:${id}, got ${cached.kind}:${cached.scheduleId}. Overwriting cache.`)
+            cached = null
         }
 
+        let data = force ? null : cached
+
         if (!data) {
-            const res = await getSchedule(id, kind, bearer)
-            if (res.status === 401) return json({error: 'unauthorized'}, 401)
-            data = {
-                scheduleId: id,
-                kind,
-                title: '',
-                events: res.events,
-                fetchedAt: Date.now(),
+            try {
+                const res = await getSchedule(rawId, kind, bearer)
+                if (res.status === 401) return json({error: 'unauthorized'}, 401)
+                if (res.status !== 200) {
+                    if (cached) {
+                        data = cached
+                    } else {
+                        return error('Не удалось загрузить расписание от сервера ЮУрГУ', res.status >= 500 ? 502 : res.status)
+                    }
+                } else {
+                    data = {
+                        scheduleId: rawId,
+                        kind,
+                        title: '',
+                        events: res.events,
+                        fetchedAt: Date.now(),
+                    }
+                    await cache.setJson(cacheKey, data, config.scheduleTtl)
+                }
+            } catch (err) {
+                if (cached) {
+                    data = cached
+                } else {
+                    throw err
+                }
             }
-            await cache.setJson(cacheKey, data, config.scheduleTtl)
         }
 
         const events =

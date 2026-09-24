@@ -20,11 +20,20 @@ export async function GET(request: Request): Promise<Response> {
         const userId = userIdFromAuth(bearer) ?? 'anon'
         const cacheKey = `rating:${userId}:${term}`
 
-        let data = force ? null : await cache.getJson<RatingData>(cacheKey)
+        let cached = await cache.getJson<RatingData>(cacheKey)
+        let data = force ? null : cached
         if (!data) {
-            const subjects = await getRating(term, bearer)
-            data = {term, subjects, fetchedAt: Date.now()}
-            await cache.setJson(cacheKey, data, config.ratingTtl)
+            try {
+                const subjects = await getRating(term, bearer)
+                data = {term, subjects, fetchedAt: Date.now()}
+                await cache.setJson(cacheKey, data, config.ratingTtl)
+            } catch (err) {
+                if (cached) {
+                    data = cached
+                } else {
+                    throw err
+                }
+            }
         }
         return json(data, 200)
     })

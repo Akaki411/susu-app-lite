@@ -4,7 +4,7 @@
 // При загрузке загружает расписание из IndexedDB, затем в фоне запрашивает обновление
 
 
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Icon, type IconName} from '@/components/common/icons'
 import {PageHeader} from '@/components/common/page-header.tsx'
 import {DayCarousel} from '@/components/schedule/day-carousel.tsx'
@@ -74,23 +74,51 @@ export default () => {
 
     const scheduleCacheKey = source ? `${source.kind}:${source.id}` : 'none'
 
+    const isScheduleData = useCallback((d: unknown): d is ScheduleData => {
+        if (!d || typeof d !== 'object') return false
+        const s = d as Partial<ScheduleData>
+        return typeof s.scheduleId === 'string' && Array.isArray(s.events)
+    }, [])
+
+    const isScheduleEmpty = useCallback((d: ScheduleData): boolean => {
+        return !Array.isArray(d.events) || d.events.length === 0
+    }, [])
+
     const {data, refreshing, refresh} = useOfflineData<ScheduleData>({
         store: 'schedule',
         cacheKey: scheduleCacheKey,
         enabled: !!source,
         fetcher: (force) => getSchedule(source!.id, source!.kind, {force}),
+        isValid: isScheduleData,
+        isEmpty: isScheduleEmpty,
     })
 
-    useForceRefreshIfEmpty(scheduleCacheKey, data != null && data.events.length === 0, refreshing, refresh)
+    useForceRefreshIfEmpty(
+        scheduleCacheKey,
+        data != null && Array.isArray(data.events) && data.events.length === 0,
+        refreshing,
+        refresh,
+    )
 
-    const isValidData = !data || !source || (data.scheduleId === source.id && data.kind === source.kind)
+    const isValidData =
+        !data ||
+        !source ||
+        (data.scheduleId.toLowerCase() === source.id.toLowerCase() && data.kind === source.kind)
+
     useEffect(() => {
-        if (data && source && (data.scheduleId !== source.id || data.kind !== source.kind)) {
+        if (
+            data &&
+            source &&
+            (data.scheduleId.toLowerCase() !== source.id.toLowerCase() || data.kind !== source.kind)
+        ) {
             void refresh(true)
         }
     }, [data, source, refresh])
 
-    const byDate = useMemo(() => groupByDate(isValidData ? (data?.events ?? []) : []), [data, isValidData])
+    const byDate = useMemo(
+        () => groupByDate(isValidData && Array.isArray(data?.events) ? data.events : []),
+        [data, isValidData],
+    )
 
     const autoPickedForRef = useRef<string | null>(null)
     useEffect(() => {
@@ -104,13 +132,26 @@ export default () => {
 
     const weeks = useMemo(() => {
         const set = new Set<string>()
-        for (const key of byDate.keys()) set.add(toKey(mondayOf(new Date(`${key}T00:00:00`))))
+        for (const key of byDate.keys()) {
+            if (!key || !/^\d{4}-\d{2}-\d{2}$/.test(key)) continue
+            const d = parseKey(key)
+            if (!isNaN(d.getTime())) {
+                const mon = mondayOf(d)
+                if (!isNaN(mon.getTime())) {
+                    set.add(toKey(mon))
+                }
+            }
+        }
         if (set.size === 0) set.add(toKey(mondayOf(now)))
-        return [...set].sort().map((k) => new Date(`${k}T00:00:00`))
+        const list = [...set]
+            .sort()
+            .map((k) => parseKey(k))
+            .filter((d) => !isNaN(d.getTime()))
+        return list.length > 0 ? list : [mondayOf(now)]
     }, [byDate, now])
 
     const onSourceChange = (s: ScheduleSource) => {
-        if (ownSource && ownSource.kind === s.kind && ownSource.id === s.id) {
+        if (ownSource && ownSource.kind === s.kind && ownSource.id.toLowerCase() === s.id.toLowerCase()) {
             clearViewedScheduleSource()
         } else {
             setViewedScheduleSource(s)
@@ -118,8 +159,12 @@ export default () => {
         setSource(s)
     };
 
-    const daysBetween = (a: Date, b: Date): number =>
-        Math.round((parseKey(toKey(b)).getTime() - parseKey(toKey(a)).getTime()) / 86400000);
+    const daysBetween = (a: Date, b: Date): number => {
+        const tB = parseKey(toKey(b)).getTime()
+        const tA = parseKey(toKey(a)).getTime()
+        if (isNaN(tA) || isNaN(tB)) return 1
+        return Math.round((tB - tA) / 86400000)
+    };
 
     const findNextDateWithPairs = (from: Date): Date | null => {
         const fromKey = toKey(from)
@@ -139,7 +184,7 @@ export default () => {
         return best ? parseKey(best) : null
     };
 
-    const selWeekMonday = weeks.find((w) => sameDay(w, weekMonday)) ?? weeks[0]!
+    const selWeekMonday = weeks.find((w) => sameDay(w, weekMonday)) ?? weeks[0] ?? mondayOf(now)
     const selIndex = Math.max(0, weeks.findIndex((w) => sameDay(w, selWeekMonday)))
 
     const goWeek = (delta: 1 | -1) => {

@@ -3,7 +3,7 @@
 //
 // Семестр и предметы читаются из IndexedDB, затем обновляются в фоне
 
-import {useState} from 'react'
+import {useCallback, useState} from 'react'
 import {PageHeader} from '@/components/common/page-header.tsx'
 import {JournalSheet} from '@/components/rating/journal-sheet.tsx'
 import {RatingRow} from '@/components/rating/rating-row.tsx'
@@ -34,13 +34,30 @@ export default () => {
 
     const ratingCacheKey = `rating:${activeTerm}`
 
+    const isRatingData = useCallback((d: unknown): d is RatingData => {
+        if (!d || typeof d !== 'object') return false
+        const r = d as Partial<RatingData>
+        return typeof r.term === 'number' && Array.isArray(r.subjects)
+    }, [])
+
+    const isRatingEmpty = useCallback((d: RatingData): boolean => {
+        return !Array.isArray(d.subjects) || d.subjects.length === 0
+    }, [])
+
     const {data, refreshing, refresh} = useOfflineData<RatingData>({
         store: 'rating',
         cacheKey: ratingCacheKey,
         fetcher: (force) => getRating(activeTerm, force),
+        isValid: isRatingData,
+        isEmpty: isRatingEmpty,
     })
 
-    useForceRefreshIfEmpty(ratingCacheKey, data != null && data.subjects.length === 0, refreshing, refresh)
+    useForceRefreshIfEmpty(
+        ratingCacheKey,
+        data != null && Array.isArray(data.subjects) && data.subjects.length === 0,
+        refreshing,
+        refresh,
+    )
 
     const [manualRefreshing, setManualRefreshing] = useState(false)
     const {handlers, pullDistance} = useSwipe({

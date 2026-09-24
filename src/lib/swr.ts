@@ -9,6 +9,8 @@ interface OfflineDataOptions<T> {
     fetcher: (force: boolean) => Promise<T>
     enabled?: boolean
     auto?: boolean
+    isValid?: (data: unknown) => data is T
+    isEmpty?: (data: T) => boolean
 }
 
 interface OfflineDataResult<T> {
@@ -26,6 +28,8 @@ export function useOfflineData<T>({
   fetcher,
   enabled = true,
   auto = true,
+  isValid,
+  isEmpty,
 }: OfflineDataOptions<T>): OfflineDataResult<T> {
     const [data, setData] = useState<T | null>(null)
     const [loading, setLoading] = useState(true)
@@ -39,6 +43,8 @@ export function useOfflineData<T>({
     const activeKeyRef = useRef(cacheKey)
     activeKeyRef.current = cacheKey
 
+    const prevKeyRef = useRef<string | null>(null)
+
     const refresh = useCallback(async (force = false) => {
         if (!enabled) return
         const requestKey = cacheKey
@@ -47,30 +53,54 @@ export function useOfflineData<T>({
         try {
             const fresh = await fetcherRef.current(force)
             if (activeKeyRef.current !== requestKey) return
-            setData(fresh)
+            if (!fresh || (isValid && !isValid(fresh))) {
+                setError(true)
+                return
+            }
+            setData((current) => {
+                if (isEmpty && isEmpty(fresh) && current && !isEmpty(current)) {
+                    return current
+                }
+                void idbSet(store, requestKey, fresh)
+                return fresh
+            })
             setFromNetwork(true)
-            void idbSet(store, requestKey, fresh)
         } catch {
             if (activeKeyRef.current === requestKey) setError(true)
         } finally {
             if (activeKeyRef.current === requestKey) setRefreshing(false)
         }
-    }, [enabled, store, cacheKey])
+    }, [enabled, store, cacheKey, isValid, isEmpty])
 
     useEffect(() => {
         let cancelled = false
-        setLoading(true)
-        setData(null)
-        idbGet<T>(store, cacheKey).then((cached) => {
+        if (prevKeyRef.current !== cacheKey) {
+            prevKeyRef.current = cacheKey
+            setData(null)
+            setLoading(true)
+        }
+
+        const loadCached = async () => {
+            let cached = await idbGet<T>(store, cacheKey)
+            if (!cached && cacheKey !== cacheKey.toLowerCase()) {
+                cached = await idbGet<T>(store, cacheKey.toLowerCase())
+            }
             if (cancelled) return
-            if (cached != null) setData(cached)
+            if (cached != null) {
+                if (!isValid || isValid(cached)) {
+                    setData(cached)
+                }
+            }
             setLoading(false)
             if (auto && enabled) void refresh()
-        })
+        }
+
+        void loadCached()
+
         return () => {
             cancelled = true
         }
-    }, [store, cacheKey, enabled])
+    }, [store, cacheKey, enabled, auto, refresh, isValid])
 
     return {data, loading, refreshing, fromNetwork, error, refresh}
 }

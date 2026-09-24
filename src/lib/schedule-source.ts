@@ -14,7 +14,8 @@ const VIEW_KEY = 'susu_schedule_view'
 const RECENT_KEY = 'susu_schedule_recent'
 const RECENT_LIMIT = 5
 
-const sameSource = (a: ScheduleSource, b: ScheduleSource): boolean => a.kind === b.kind && a.id === b.id
+const sameSource = (a: ScheduleSource, b: ScheduleSource): boolean =>
+    a.kind === b.kind && a.id.toLowerCase() === b.id.toLowerCase()
 
 const readJson = <T>(storage: Storage | undefined, key: string): T | null => {
     if (!storage) return null

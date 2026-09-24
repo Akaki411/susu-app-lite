@@ -140,7 +140,7 @@ const normalizeEvent = (raw: Record<string, unknown>, kind: ScheduleSourceKind):
         eventType: String(raw.eventType ?? ''),
         room: room && room !== '-' ? room : undefined,
         teacher: teacher && teacher !== '-' ? teacher : undefined,
-        groups: raw.groups as string[] | undefined,
+        groups: Array.isArray(raw.groups) ? raw.groups.map(String) : undefined,
     }
 }
 
@@ -153,7 +153,7 @@ export const getSchedule = async (
     if (res.status !== 200) return {status: res.status, events: []}
     const raw = (await res.json().catch(() => [])) as Array<Record<string, unknown>>
     const events = Array.isArray(raw) ? raw.map((e) => normalizeEvent(e, kind)) : []
-    events.sort((a, b) => (a.date === b.date ? a.beginTime.localeCompare(b.beginTime) : a.date.localeCompare(b.date)))
+    events.sort((a, b) => (a.date === b.date ? (a.beginTime || '').localeCompare(b.beginTime || '') : (a.date || '').localeCompare(b.date || '')))
     return {status: 200, events}
 }
 

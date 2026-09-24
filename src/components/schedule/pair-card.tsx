@@ -8,19 +8,27 @@ import {pairCategoryOf} from '@/lib/schedule-utils'
 import type {ScheduleEvent} from '@/shared/types'
 
 function PairCardBase({event, live}: { event: ScheduleEvent; live: boolean }) {
+    if (!event) return null
     const category = pairCategoryOf(event.eventType)
+    const groups = Array.isArray(event.groups) && event.groups.length > 0 ? event.groups.join(', ') : ''
+    const beginTime = event.beginTime || ''
+    const endTime = event.endTime || ''
+    const timeStr = beginTime && endTime ? `${beginTime}–${endTime}` : beginTime || endTime
+
     return (
         <div className={`pair-card pair-card--${category}`}>
             <div className="pair-card__head">
                 <span className="pair-card__type">
-                    <span className="pair-card__type-text">{event.eventType}</span>
+                    <span className="pair-card__type-text">{event.eventType || ''}</span>
                     {live && <LiveDot/>}
                 </span>
-                <span className="pair-card__time">
-                    {event.beginTime}–{event.endTime}
-                </span>
+                {timeStr && (
+                    <span className="pair-card__time">
+                        {timeStr}
+                    </span>
+                )}
             </div>
-            <div className="pair-card__subject">{event.subject}</div>
+            <div className="pair-card__subject">{event.subject || ''}</div>
             <div className="pair-card__meta">
                 {event.teacher && (
                     <span className="pair-card__meta-row">
@@ -32,7 +40,7 @@ function PairCardBase({event, live}: { event: ScheduleEvent; live: boolean }) {
                     <span className="pair-card__meta-row">
                         <Icon name="mapPin" className="pair-card__meta-icon"/>
                         {event.room}
-                        {event.groups && event.groups.length > 0 ? ` · ${event.groups.join(', ')}` : ''}
+                        {groups ? ` · ${groups}` : ''}
                     </span>
                 )}
             </div>
