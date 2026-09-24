@@ -69,6 +69,9 @@ const fr: Record<I18nKey, string> = {
     'schedule.noClasses': 'Aucun cours',
     'schedule.notFound': 'Rien trouvé',
     'schedule.pullToRefresh': 'Tirez vers le bas pour actualiser',
+    'schedule.releaseToRefresh': 'Relâchez pour actualiser',
+    'schedule.pullToReload': 'Tirez vers le bas pour recharger la page',
+    'schedule.releaseToReload': 'Relâchez pour recharger la page',
     'schedule.calendar': 'Choisir une date',
 
     'rating.title': 'Notes',

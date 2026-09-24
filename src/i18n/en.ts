@@ -69,6 +69,9 @@ const en: Record<I18nKey, string> = {
     'schedule.noClasses': 'No classes',
     'schedule.notFound': 'Nothing found',
     'schedule.pullToRefresh': 'Pull down to refresh',
+    'schedule.releaseToRefresh': 'Release to refresh',
+    'schedule.pullToReload': 'Pull down to reload page',
+    'schedule.releaseToReload': 'Release to reload page',
     'schedule.calendar': 'Pick a date',
 
     'rating.title': 'Rating',

@@ -37,8 +37,16 @@ export const WeekCarousel = ({
         onSettled()
     }
 
-    const pane = (monday: Date | null) => (
-        <div className="week-carousel__pane">{monday ? renderWeek(monday) : null}</div>
+    const sliding = dir !== null
+
+    const pane = (monday: Date | null, active: boolean) => (
+        <div
+            className={`week-carousel__pane${active ? ' week-carousel__pane--active' : ''}${
+                !active && !sliding ? ' week-carousel__pane--dormant' : ''
+            }`}
+        >
+            {monday ? renderWeek(monday) : null}
+        </div>
     )
 
     return (
@@ -48,9 +56,9 @@ export const WeekCarousel = ({
                 style={{transform: `translateX(${translate})`}}
                 onTransitionEnd={onTransitionEnd}
             >
-                {pane(prev)}
-                {pane(curr)}
-                {pane(next)}
+                {pane(prev, false)}
+                {pane(curr, true)}
+                {pane(next, false)}
             </div>
         </div>
     )

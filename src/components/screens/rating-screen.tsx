@@ -60,12 +60,16 @@ export default () => {
     )
 
     const [manualRefreshing, setManualRefreshing] = useState(false)
-    const {handlers, pullDistance} = useSwipe({
+    const [pageReloading, setPageReloading] = useState(false)
+    const {handlers, pullDistance, pullType} = useSwipe({
         onPullRefresh: () => {
             setManualRefreshing(true)
             void refresh(true).finally(() => setManualRefreshing(false))
         },
-        pullFromHeaderOnly: true,
+        onPullRefreshPage: () => {
+            setPageReloading(true)
+            if (typeof window !== 'undefined') window.location.reload()
+        },
     })
 
     const subjects = data?.subjects ?? []
@@ -77,6 +81,20 @@ export default () => {
 
     return (
         <div className="screen screen--no-overscroll" {...handlers}>
+            {(pullType === 'page' || pageReloading) && (pullDistance > 0 || pageReloading) && (
+                <div
+                    className="pull-refresh pull-refresh--page"
+                    style={{height: Math.max(pullDistance, pageReloading ? 28 : 0)}}
+                >
+                    {pageReloading ? (
+                        <span className="spinner"/>
+                    ) : pullDistance > 70 ? (
+                        t('schedule.releaseToReload')
+                    ) : (
+                        t('schedule.pullToReload')
+                    )}
+                </div>
+            )}
             <div className="screen__header">
                 <PageHeader
                     title={t('rating.title')}
@@ -85,9 +103,15 @@ export default () => {
                 />
             </div>
 
-            {(pullDistance > 0 || manualRefreshing) && (
+            {(pullType === 'content' || manualRefreshing) && (pullDistance > 0 || manualRefreshing) && (
                 <div className="pull-refresh" style={{height: Math.max(pullDistance, manualRefreshing ? 28 : 0)}}>
-                    {manualRefreshing ? <span className="spinner"/> : t('schedule.pullToRefresh')}
+                    {manualRefreshing ? (
+                        <span className="spinner"/>
+                    ) : pullDistance > 70 ? (
+                        t('schedule.releaseToRefresh')
+                    ) : (
+                        t('schedule.pullToRefresh')
+                    )}
                 </div>
             )}
 

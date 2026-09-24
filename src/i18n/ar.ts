@@ -69,6 +69,9 @@ const ar: Record<I18nKey, string> = {
     'schedule.noClasses': 'لا توجد محاضرات',
     'schedule.notFound': 'لم يتم العثور على شيء',
     'schedule.pullToRefresh': 'اسحب للأسفل للتحديث',
+    'schedule.releaseToRefresh': 'أفلت للتحديث',
+    'schedule.pullToReload': 'اسحب للأسفل لإعادة تحميل الصفحة',
+    'schedule.releaseToReload': 'أفلت لإعادة تحميل الصفحة',
     'schedule.calendar': 'اختيار التاريخ',
 
     'rating.title': 'التقييم',

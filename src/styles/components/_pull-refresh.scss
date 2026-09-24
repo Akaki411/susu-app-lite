@@ -5,5 +5,12 @@
   padding: 0.25rem 0;
   text-align: center;
   font-size: 0.71875rem;
-  color: var(--c-text-3);
+  overflow: hidden;
+
+  &--page {
+    position: relative;
+    z-index: 25;
+    background: var(--c-surface);
+    border-bottom: 0.0625rem solid var(--c-divider);
+  }
 }

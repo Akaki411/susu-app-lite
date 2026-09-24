@@ -2,11 +2,13 @@
 
 import {useRef, useState, type TouchEvent} from 'react'
 
+export type PullType = 'content' | 'page' | null
+
 interface SwipeCallbacks {
     onSwipeLeft?: () => void
     onSwipeRight?: () => void
     onPullRefresh?: () => void
-    pullFromHeaderOnly?: boolean
+    onPullRefreshPage?: () => void
 }
 
 const H_THRESHOLD = 60
@@ -17,10 +19,11 @@ export const useSwipe = ({
     onSwipeLeft,
     onSwipeRight,
     onPullRefresh,
-    pullFromHeaderOnly = false,
+    onPullRefreshPage,
 }: SwipeCallbacks) => {
     const start = useRef<{ x: number; y: number; atTop: boolean; fromHeader: boolean } | null>(null)
     const [pullDistance, setPullDistance] = useState(0)
+    const [pullType, setPullType] = useState<PullType>(null)
 
     const onTouchStart = (e: TouchEvent<HTMLElement>) => {
         const t = e.touches[0]
@@ -38,9 +41,15 @@ export const useSwipe = ({
         if (!s || !t) return
         const dy = t.clientY - s.y
         const dx = t.clientX - s.x
-        const isPullAllowed = !pullFromHeaderOnly || s.fromHeader
-        if (onPullRefresh && s.atTop && isPullAllowed && dy > 0 && Math.abs(dy) > Math.abs(dx)) {
-            setPullDistance(Math.min(dy * 0.5, MAX_PULL))
+
+        if (s.atTop && dy > 0 && Math.abs(dy) > Math.abs(dx)) {
+            if (s.fromHeader) {
+                setPullType('page')
+                setPullDistance(Math.min(dy * 0.5, MAX_PULL))
+            } else if (onPullRefresh) {
+                setPullType('content')
+                setPullDistance(Math.min(dy * 0.5, MAX_PULL))
+            }
         }
     };
 
@@ -50,18 +59,32 @@ export const useSwipe = ({
         const t = e.changedTouches[0]
         if (!s || !t) {
             setPullDistance(0)
+            setPullType(null)
             return
         }
         const dx = t.clientX - s.x
         const dy = t.clientY - s.y
-        const isPullAllowed = !pullFromHeaderOnly || s.fromHeader
 
-        if (onPullRefresh && s.atTop && isPullAllowed && dy > V_THRESHOLD && Math.abs(dy) > Math.abs(dx)) {
-            onPullRefresh()
-            setPullDistance(0)
-            return
+        if (s.atTop && dy > V_THRESHOLD && Math.abs(dy) > Math.abs(dx)) {
+            if (s.fromHeader) {
+                setPullDistance(0)
+                setPullType(null)
+                if (onPullRefreshPage) {
+                    onPullRefreshPage()
+                } else if (typeof window !== 'undefined') {
+                    window.location.reload()
+                }
+                return
+            } else if (onPullRefresh) {
+                onPullRefresh()
+                setPullDistance(0)
+                setPullType(null)
+                return
+            }
         }
+
         setPullDistance(0)
+        setPullType(null)
 
         if (Math.abs(dx) > H_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
             if (dx < 0) onSwipeLeft?.()
@@ -69,5 +92,5 @@ export const useSwipe = ({
         }
     };
 
-    return {handlers: {onTouchStart, onTouchMove, onTouchEnd}, pullDistance}
+    return {handlers: {onTouchStart, onTouchMove, onTouchEnd}, pullDistance, pullType}
 };

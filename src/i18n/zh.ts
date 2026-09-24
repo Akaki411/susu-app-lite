@@ -69,6 +69,9 @@ const zh: Record<I18nKey, string> = {
     'schedule.noClasses': '暂无课程',
     'schedule.notFound': '未找到内容',
     'schedule.pullToRefresh': '下拉刷新',
+    'schedule.releaseToRefresh': '释放刷新',
+    'schedule.pullToReload': '下拉重新加载页面',
+    'schedule.releaseToReload': '释放重新加载页面',
     'schedule.calendar': '选择日期',
 
     'rating.title': '成绩',

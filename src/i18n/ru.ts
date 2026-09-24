@@ -67,6 +67,9 @@ const ru = {
     'schedule.noClasses': 'Занятий нет',
     'schedule.notFound': 'Ничего не найдено',
     'schedule.pullToRefresh': 'Потяните вниз для обновления',
+    'schedule.releaseToRefresh': 'Отпустите для обновления',
+    'schedule.pullToReload': 'Потяните для перезагрузки страницы',
+    'schedule.releaseToReload': 'Отпустите для перезагрузки страницы',
     'schedule.calendar': 'Выбор даты',
 
     'rating.title': 'Рейтинг',

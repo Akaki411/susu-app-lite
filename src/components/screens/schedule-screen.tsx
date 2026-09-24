@@ -70,6 +70,7 @@ export default () => {
     const [slide, setSlide] = useState<{ dir: 'left' | 'right'; step: number } | null>(null)
     const [weekSlide, setWeekSlide] = useState<{ dir: 'left' | 'right' } | null>(null)
     const [manualRefreshing, setManualRefreshing] = useState(false)
+    const [pageReloading, setPageReloading] = useState(false)
     const weeksScrollRef = useRef<HTMLDivElement | null>(null)
 
     const scheduleCacheKey = source ? `${source.kind}:${source.id}` : 'none'
@@ -201,7 +202,7 @@ export default () => {
         setWeekSlide(null)
     };
 
-    const {handlers, pullDistance} = useSwipe({
+    const {handlers, pullDistance, pullType} = useSwipe({
         onSwipeLeft: () => {
             if (mode !== 'dates') return goWeek(1)
             const next = findNextDateWithPairs(pivot)
@@ -216,12 +217,18 @@ export default () => {
             setManualRefreshing(true)
             void refresh(true).finally(() => setManualRefreshing(false))
         },
-        pullFromHeaderOnly: true,
+        onPullRefreshPage: () => {
+            setPageReloading(true)
+            if (typeof window !== 'undefined') window.location.reload()
+        },
     })
 
     const onSlideSettled = () => {
         setPivot((d) => (slide ? addDays(d, slide.dir === 'left' ? slide.step : -slide.step) : d))
         setSlide(null)
+        if (typeof window !== 'undefined' && window.scrollY > 0) {
+            window.scrollTo({top: 0, behavior: 'instant'})
+        }
     };
 
     const goNextWeekInDates = () => setSlide((s) => s ?? {dir: 'left', step: 7});
@@ -315,6 +322,20 @@ export default () => {
 
     return (
         <div className="screen screen--no-overscroll" {...handlers}>
+            {(pullType === 'page' || pageReloading) && (pullDistance > 0 || pageReloading) && (
+                <div
+                    className="pull-refresh pull-refresh--page"
+                    style={{height: Math.max(pullDistance, pageReloading ? 28 : 0)}}
+                >
+                    {pageReloading ? (
+                        <span className="spinner"/>
+                    ) : pullDistance > 70 ? (
+                        t('schedule.releaseToReload')
+                    ) : (
+                        t('schedule.pullToReload')
+                    )}
+                </div>
+            )}
             <div className="screen__header">
                 <PageHeader
                     title={t('schedule.title')}
@@ -330,9 +351,15 @@ export default () => {
             </div>
 
             <div className="schedule__content">
-                {(pullDistance > 0 || manualRefreshing) && (
+                {(pullType === 'content' || manualRefreshing) && (pullDistance > 0 || manualRefreshing) && (
                     <div className="pull-refresh" style={{height: Math.max(pullDistance, manualRefreshing ? 28 : 0)}}>
-                        {manualRefreshing ? <span className="spinner"/> : t('schedule.pullToRefresh')}
+                        {manualRefreshing ? (
+                            <span className="spinner"/>
+                        ) : pullDistance > 70 ? (
+                            t('schedule.releaseToRefresh')
+                        ) : (
+                            t('schedule.pullToRefresh')
+                        )}
                     </div>
                 )}
 

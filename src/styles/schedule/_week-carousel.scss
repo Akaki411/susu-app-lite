@@ -15,5 +15,14 @@
     flex-shrink: 0;
     width: 33.3333%;
     padding: 0 1.25rem;
+
+    &--dormant {
+      height: 0;
+      max-height: 0;
+      overflow: hidden;
+      visibility: hidden;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
   }
 }

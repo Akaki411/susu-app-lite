@@ -12,14 +12,22 @@ const Pane = ({
     pairs,
     dateKey,
     now,
-    emptyText
+    emptyText,
+    active,
+    sliding,
 }: {
     pairs: ScheduleEvent[]
     dateKey: string
     now: Date
     emptyText: string
+    active: boolean
+    sliding: boolean
 }) => (
-    <div className="day-carousel__pane">
+    <div
+        className={`day-carousel__pane${active ? ' day-carousel__pane--active' : ''}${
+            !active && !sliding ? ' day-carousel__pane--dormant' : ''
+        }`}
+    >
         {pairs.length > 0 ? (
             <div className="pair-list">
                 {pairs.map((p, i) => (
@@ -52,6 +60,7 @@ export const DayCarousel = ({
     const [suppress, setSuppress] = useState(false)
     const prevDay = addDays(pivot, -step)
     const nextDay = addDays(pivot, step)
+    const sliding = dir !== null
 
     useEffect(() => {
         if (!suppress) return
@@ -74,9 +83,9 @@ export const DayCarousel = ({
                 style={{transform: `translateX(${translate})`}}
                 onTransitionEnd={onTransitionEnd}
             >
-                <Pane pairs={getPairs(prevDay)} dateKey={toKey(prevDay)} now={now} emptyText={emptyText}/>
-                <Pane pairs={getPairs(pivot)} dateKey={toKey(pivot)} now={now} emptyText={emptyText}/>
-                <Pane pairs={getPairs(nextDay)} dateKey={toKey(nextDay)} now={now} emptyText={emptyText}/>
+                <Pane pairs={getPairs(prevDay)} dateKey={toKey(prevDay)} now={now} emptyText={emptyText} active={false} sliding={sliding}/>
+                <Pane pairs={getPairs(pivot)} dateKey={toKey(pivot)} now={now} emptyText={emptyText} active={true} sliding={sliding}/>
+                <Pane pairs={getPairs(nextDay)} dateKey={toKey(nextDay)} now={now} emptyText={emptyText} active={false} sliding={sliding}/>
             </div>
         </div>
     )
